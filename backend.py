@@ -393,7 +393,7 @@ def auto_match():
 # ================= STATIC FILES =================
 @app.route("/")
 def home():
-    return send_from_directory("frontend", "login.html")
+    return send_from_directory(os.path.join(os.getcwd(), "frontend"), "login.html")
 
 @app.route("/uploads/<path:filename>")
 def uploads(filename):
@@ -401,10 +401,10 @@ def uploads(filename):
 
 @app.route("/<path:path>")
 def static_files(path):
-    if path.startswith("api") or path.startswith("uploads"):
+    frontend_path = os.path.join(os.getcwd(), "frontend")
+    if path.startswith("api"):
         return "Not Found", 404
-    return send_from_directory("frontend", path)
-
+    return send_from_directory(frontend_path, path)
 
 # ================= AUTH =================
 @app.route("/api/signup", methods=["POST"])
