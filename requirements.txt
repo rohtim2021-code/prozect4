@@ -3,7 +3,8 @@ flask-cors
 pymongo
 python-dotenv
 cloudinary
-opencv-python
+opencv-python-headless
 numpy
 requests
 certifi
+gunicorn
