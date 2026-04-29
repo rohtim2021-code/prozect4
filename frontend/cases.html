@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8">
@@ -7,249 +8,22 @@
 <style>
 body{font-family:Segoe UI;background:#fffdf5;margin:0;}
 nav{display:flex;justify-content:space-between;padding:15px 40px;border-bottom:1px solid #eee;background:#fff;}
-
 .container{padding:30px 60px;}
-
 h1{font-size:32px;margin-bottom:5px;}
 .sub{color:#666;margin-bottom:20px;}
-
-.live{
-  background:#fdecea;
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:20px;
-}
-
-/* FILTER */
-.controls{margin-bottom:20px;}
-input,select{
-  padding:10px;
-  margin-right:10px;
-  border-radius:6px;
-  border:1px solid #ccc;
-}
-
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:25px;
-}
-
-/* CARD */
-.card{
-  background:#fff;
-  border:1px solid #ddd;
-  border-radius:16px;
-  overflow:hidden;
-  transition:0.3s;
-  box-shadow:0 4px 10px rgba(0,0,0,0.05);
-  cursor:pointer;
-}
-.card:hover{transform:translateY(-6px);}
-.match-high{border:2px solid green;}
-
-/* IMAGE */
-.card img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-}
-
-/* BODY */
-.card-body{
-  padding:15px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-/* BADGE */
-.badge{
-  position:absolute;
-  top:10px;right:10px;
-  padding:4px 10px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:bold;
-}
-.missing{background:#ffe5e5;color:red;}
-.found{background:#e6fff1;color:green;}
-
-.card-top{position:relative;}
-
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:25px;}
+.card{background:#fff;border:1px solid #ddd;border-radius:16px;overflow:hidden;cursor:pointer;}
+.card img{width:100%;height:220px;object-fit:cover;}
+.card-body{padding:15px;}
 .name{font-size:18px;font-weight:600;}
-.info{font-size:14px;color:#555;}
-.match{font-weight:bold;margin-top:5px;}
-
-/* share strip on card */
-.card-share{
-  display:flex;
-  gap:6px;
-  padding:10px 15px;
-  border-top:1px solid #f3e7d9;
-  background:#fffaf5;
-}
-.share-ico{
-  flex:1;
-  padding:6px 4px;
-  border:none;
-  border-radius:7px;
-  font-size:12px;
-  font-weight:600;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  transition:.15s;
-}
-.sh-wa {background:#25d366;color:#fff;}
-.sh-fb {background:#1877f2;color:#fff;}
-.sh-tw {background:#000;color:#fff;}
-.sh-cp {background:#f3e7d9;color:#c95d2a;}
-.share-ico:hover{opacity:.85;}
-
-/* ============ POPUP ============ */
-.popup{
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  background:rgba(0,0,0,0.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-
-/* popup doc box */
-.popup-doc{
-  background:#fff;
-  border-radius:16px;
-  width:460px;
-  max-width:96vw;
-  max-height:90vh;
-  overflow-y:auto;
-  box-shadow:0 30px 80px rgba(0,0,0,0.25);
-  animation:popIn .18s ease;
-}
-.popup-doc::-webkit-scrollbar{width:4px;}
-.popup-doc::-webkit-scrollbar-thumb{background:#e7d9c7;border-radius:4px;}
-
-@keyframes popIn{
-  from{opacity:0;transform:scale(.93);}
-  to  {opacity:1;transform:scale(1);}
-}
-
-/* popup header */
-.pop-header{
-  background:linear-gradient(135deg,#c95d2a,#e8845a);
-  padding:15px 20px;
-  border-radius:16px 16px 0 0;
-  display:flex;justify-content:space-between;align-items:center;
-}
-.pop-header h3{color:#fff;font-size:15px;margin:0;}
-.pop-close{
-  background:rgba(255,255,255,.25);
-  border:none;color:#fff;
-  width:26px;height:26px;
-  border-radius:50%;cursor:pointer;font-size:14px;
-}
-
-/* popup body */
-.pop-body{padding:20px;}
-
-/* square photo */
-.pop-photo{
-  width:150px;height:150px;
-  margin:0 auto 16px;
-  overflow:hidden;
-  border-radius:10px;
-  border:3px solid #e8845a;
-  cursor:pointer;
-}
-.pop-photo img{width:100%;height:100%;object-fit:cover;}
-
-/* section label */
-.pop-section{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.07em;
-  color:#c95d2a;
-  font-weight:700;
-  margin:14px 0 7px;
-  border-bottom:1px solid #f3e7d9;
-  padding-bottom:3px;
-}
-
-/* doc row */
-.pop-row{
-  display:flex;
-  justify-content:space-between;
-  padding:6px 0;
-  border-bottom:1px solid #faf5ee;
-  font-size:13px;
-}
-.pop-row:last-child{border:none;}
-.pop-row .lbl{color:#999;flex:0 0 120px;font-size:12px;}
-.pop-row .val{color:#1c1917;font-weight:500;text-align:right;word-break:break-word;}
-
-/* match badge */
-.match-badge{
-  display:inline-block;
-  padding:3px 10px;
-  border-radius:20px;
-  font-size:13px;font-weight:bold;
-}
-.match-hi{background:#d1fae5;color:#065f46;}
-.match-lo{background:#fee2e2;color:#991b1b;}
-.match-no{background:#f3f4f6;color:#aaa;}
-
-/* share buttons strip inside popup */
-.pop-share{
-  display:flex;gap:8px;
-  margin-top:18px;
-  flex-wrap:wrap;
-}
-.pop-share-btn{
-  flex:1;min-width:90px;
-  padding:9px 6px;
-  border:none;border-radius:8px;
-  font-size:13px;font-weight:600;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-  transition:.15s;
-}
-.pop-share-btn:hover{opacity:.85;transform:translateY(-1px);}
-.psb-wa{background:#25d366;color:#fff;}
-.psb-fb{background:#1877f2;color:#fff;}
-.psb-tw{background:#000;color:#fff;}
-.psb-ig{background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);color:#fff;}
-.psb-cp{background:#f3e7d9;color:#c95d2a;border:1px solid #e7d9c7;}
-
-/* full img popup */
-#imgpop{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.7);
-  display:flex;justify-content:center;align-items:center;
-  z-index:9999;cursor:pointer;
-}
-#imgpop img{width:300px;height:300px;object-fit:cover;border-radius:12px;}
-
-/* copy toast */
-.toast{
-  position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
-  background:#333;color:#fff;
-  padding:10px 22px;border-radius:8px;
-  font-size:13px;display:none;z-index:9999;
-}
 </style>
+
 </head>
 
 <body>
 
 <nav>
-  <div><b>🔎 Lost &amp; Finder</b></div>
+  <div><b>🔎 Lost & Finder</b></div>
   <div>
     <a href="index.html">Home</a>
     <a href="cases.html">Cases</a>
@@ -262,34 +36,14 @@ input,select{
 <h1>Recent Missing Persons</h1>
 <div class="sub">Help bring them home — every share matters</div>
 
-<div class="live">🔴 Live Update: New cases are being added</div>
-
-<div class="controls">
-  <input type="text" id="search" placeholder="Search name/location">
-  <select id="filter">
-    <option value="">All</option>
-    <option value="missing">Missing</option>
-    <option value="found">Found</option>
-  </select>
-</div>
-
 <div class="grid" id="grid"></div>
 
 </div>
-
-<!-- POPUP -->
-<div class="popup" id="popup">
-  <div class="popup-doc" id="popupDoc"></div>
-</div>
-
-<!-- toast -->
-<div class="toast" id="toast">✅ Link copied!</div>
 
 <script>
 
 let allData = [];
 
-// ---- LOAD ----
 async function load(){
   try{
     let m = await fetch('/api/admin/missing');
@@ -302,256 +56,38 @@ async function load(){
     found   = found.map(x=>({...x, type:"found"}));
 
     allData = [...missing, ...found];
-    applyFilter();
+    render(allData);
+
   }catch(e){
     document.getElementById("grid").innerHTML = "<h3>⚠️ Backend not running</h3>";
   }
 }
 
-// ---- FILTER ----
-function applyFilter(){
-  let search = document.getElementById("search").value.toLowerCase();
-  let type   = document.getElementById("filter").value;
-
-  let filtered = allData.filter(c=>{
-    let ms = (c.name||"").toLowerCase().includes(search) ||
-             (c.location||"").toLowerCase().includes(search);
-    let mt = !type || c.type === type;
-    return ms && mt;
-  });
-
-  render(filtered);
-}
-
-// ---- RENDER ----
 function render(data){
   let grid = document.getElementById("grid");
 
   grid.innerHTML = data.map(c=>`
-  <div class="card ${c.match>=80?'match-high':''}" onclick="viewCard(${c.id},'${c.type}')">
+  <div class="card">
 
-    <div class="card-top">
-      ${c.photo
-        ? `<img src="/uploads/${c.photo}">`
-        : `<img src="https://cdn-icons-png.flaticon.com/512/149/149071.png">`
-      }
-      <div class="badge ${c.type}">${c.type.toUpperCase()}</div>
-    </div>
+    ${c.photo
+      ? `<img src="${c.photo}">`
+      : `<img src="https://cdn-icons-png.flaticon.com/512/149/149071.png">`
+    }
 
     <div class="card-body">
       <div class="name">${c.name || "Unknown"}</div>
-      <div class="info">📍 ${c.location || "—"}</div>
-      <div class="info">📞 ${c.phone || "—"}</div>
-      <div class="info">Age: ${c.age || "—"} | ${c.gender || "—"}</div>
-      <div class="match" style="color:${c.match>=80?'green':'#c95d2a'}">
+      <div>📍 ${c.location || "—"}</div>
+      <div>📞 ${c.phone || "—"}</div>
+      <div>Age: ${c.age || "—"} | ${c.gender || "—"}</div>
+      <div style="color:${c.match>=80?'green':'#c95d2a'}">
         Match: ${c.match || 0}%
       </div>
-    </div>
-
-    <!-- quick share strip on card -->
-    <div class="card-share" onclick="event.stopPropagation()">
-      <button class="share-ico sh-wa" onclick="shareWA(${c.id},'${c.type}')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.553 4.11 1.52 5.832L0 24l6.303-1.496A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.6a9.562 9.562 0 01-4.868-1.332l-.349-.207-3.617.858.898-3.522-.228-.362A9.555 9.555 0 012.4 12C2.4 6.698 6.698 2.4 12 2.4S21.6 6.698 21.6 12 17.302 21.6 12 21.6z"/></svg>
-        WA
-      </button>
-      <button class="share-ico sh-fb" onclick="shareFB(${c.id},'${c.type}')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-        FB
-      </button>
-      <button class="share-ico sh-tw" onclick="shareTW(${c.id},'${c.type}')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        X
-      </button>
-      <button class="share-ico sh-cp" onclick="copyLink(${c.id},'${c.type}')">📋</button>
     </div>
 
   </div>
   `).join("");
 }
 
-// ---- VIEW POPUP ----
-function viewCard(id, type){
-  let c = allData.find(x=> x.id==id && x.type==type);
-  if(!c) return;
-
-  let pct     = c.match || 0;
-  let bdgCls  = pct>=80 ? "match-hi" : pct>0 ? "match-lo" : "match-no";
-  let typeLabel = type==="missing" ? "🔴 Missing Person" : "🟢 Found Person";
-
-  document.getElementById("popupDoc").innerHTML = `
-
-    <div class="pop-header">
-      <h3>${typeLabel} — #${c.id}</h3>
-      <button class="pop-close" onclick="closePop()">✕</button>
-    </div>
-
-    <div class="pop-body">
-
-      ${c.photo ? `
-      <div class="pop-photo" onclick="openImg('/uploads/${c.photo}')">
-        <img src="/uploads/${c.photo}" alt="photo">
-      </div>` : ""}
-
-      <!-- PERSONAL -->
-      <div class="pop-section">👤 Personal Information</div>
-      <div class="pop-row"><span class="lbl">Full Name</span> <span class="val">${c.name    ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Age</span>       <span class="val">${c.age     ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Gender</span>    <span class="val">${c.gender  ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Height</span>    <span class="val">${c.height  ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Aadhaar</span>   <span class="val">${c.aadhar  ||"—"}</span></div>
-
-      <!-- CONTACT -->
-      <div class="pop-section">📞 Contact Details</div>
-      <div class="pop-row"><span class="lbl">Phone</span>     <span class="val">${c.phone   ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Email</span>     <span class="val">${c.email   ||"—"}</span></div>
-
-      <!-- LOCATION -->
-      <div class="pop-section">📍 Location Details</div>
-      <div class="pop-row"><span class="lbl">Location</span>  <span class="val">${c.location||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Village</span>   <span class="val">${c.village ||c.found_village||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">City</span>      <span class="val">${c.city    ||c.found_city   ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">State</span>     <span class="val">${c.state   ||c.found_state  ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">PIN Code</span>  <span class="val">${c.pincode ||c.found_pincode||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Nearby</span>    <span class="val">${c.nearby  ||c.found_nearby ||"—"}</span></div>
-
-      <!-- CASE -->
-      <div class="pop-section">📋 Case Details</div>
-      <div class="pop-row"><span class="lbl">Status</span>    <span class="val">${c.status  ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Date</span>      <span class="val">${c.date    ||"—"}</span></div>
-      <div class="pop-row"><span class="lbl">Description</span><span class="val">${c.details||"—"}</span></div>
-
-      <!-- MATCH -->
-      ${pct > 0 ? `
-      <div class="pop-section">🔗 Match Info</div>
-      <div class="pop-row">
-        <span class="lbl">Match Score</span>
-        <span class="val"><span class="match-badge ${bdgCls}">${pct}%</span></span>
-      </div>
-      <div class="pop-row">
-        <span class="lbl">Match ID</span>
-        <span class="val">#${c.match_id||"—"}</span>
-      </div>` : ""}
-
-      <!-- SHARE -->
-      <div class="pop-section">🔗 Share This Case</div>
-      <div class="pop-share">
-        <button class="pop-share-btn psb-wa" onclick="shareWA(${c.id},'${c.type}')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.553 4.11 1.52 5.832L0 24l6.303-1.496A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.6a9.562 9.562 0 01-4.868-1.332l-.349-.207-3.617.858.898-3.522-.228-.362A9.555 9.555 0 012.4 12C2.4 6.698 6.698 2.4 12 2.4S21.6 6.698 21.6 12 17.302 21.6 12 21.6z"/></svg>
-          WhatsApp
-        </button>
-        <button class="pop-share-btn psb-fb" onclick="shareFB(${c.id},'${c.type}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-          Facebook
-        </button>
-        <button class="pop-share-btn psb-tw" onclick="shareTW(${c.id},'${c.type}')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          X / Twitter
-        </button>
-        <button class="pop-share-btn psb-ig" onclick="shareIG(${c.id},'${c.type}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-          Instagram
-        </button>
-        <button class="pop-share-btn psb-cp" onclick="copyLink(${c.id},'${c.type}')">
-          📋 Copy Link
-        </button>
-      </div>
-
-    </div>
-  `;
-
-  document.getElementById("popup").style.display = "flex";
-}
-
-function closePop(){
-  document.getElementById("popup").style.display = "none";
-}
-
-// close on overlay click
-document.getElementById("popup").addEventListener("click", function(e){
-  if(e.target === this) closePop();
-});
-
-// full image
-function openImg(src){
-  let el = document.createElement("div");
-  el.id  = "imgpop";
-  el.innerHTML = `<img src="${src}">`;
-  el.onclick = ()=> el.remove();
-  document.body.appendChild(el);
-}
-
-// ---- SHARE FUNCTIONS ----
-
-function buildShareText(c){
-  let status = c.type === "missing" ? "🚨 MISSING PERSON ALERT" : "🟢 FOUND PERSON";
-  let txt = `${status}\n\n`;
-  txt += `👤 Name: ${c.name || "Unknown"}\n`;
-  txt += `🎂 Age: ${c.age || "—"}  |  Gender: ${c.gender || "—"}\n`;
-  txt += `📍 Location: ${c.location || "—"}\n`;
-  if(c.city || c.found_city)   txt += `🏙 City: ${c.city||c.found_city}\n`;
-  if(c.state || c.found_state) txt += `🗺 State: ${c.state||c.found_state}\n`;
-  txt += `📞 Contact: ${c.phone || "—"}\n`;
-  if(c.details) txt += `📝 Details: ${c.details}\n`;
-  txt += `\n🔗 Please share and help reunite this person with their family!`;
-  return txt;
-}
-
-function getPageUrl(){
-  return window.location.origin + "/cases.html";
-}
-
-function shareWA(id, type){
-  let c = allData.find(x=> x.id==id && x.type==type);
-  if(!c) return;
-  let text = encodeURIComponent(buildShareText(c) + "\n" + getPageUrl());
-  window.open("https://api.whatsapp.com/send?text=" + text, "_blank");
-}
-
-function shareFB(id, type){
-  let url = encodeURIComponent(getPageUrl());
-  window.open("https://www.facebook.com/sharer/sharer.php?u=" + url, "_blank");
-}
-
-function shareTW(id, type){
-  let c = allData.find(x=> x.id==id && x.type==type);
-  if(!c) return;
-  let status = c.type==="missing" ? "🚨 MISSING PERSON" : "🟢 FOUND PERSON";
-  let tweet  = `${status}: ${c.name||"Unknown"} | Age: ${c.age||"—"} | 📍 ${c.location||"—"} | Contact: ${c.phone||"—"} | Please share! ${getPageUrl()} #MissingPerson #LostAndFound`;
-  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweet), "_blank");
-}
-
-function shareIG(id, type){
-  let c = allData.find(x=> x.id==id && x.type==type);
-  if(!c) return;
-  // Instagram doesn't support direct share URL — copy text & open Instagram
-  let text = buildShareText(c) + "\n" + getPageUrl();
-  navigator.clipboard.writeText(text).then(()=>{
-    showToast("📋 Caption copied! Opening Instagram...");
-    setTimeout(()=> window.open("https://www.instagram.com/", "_blank"), 1000);
-  });
-}
-
-function copyLink(id, type){
-  let c = allData.find(x=> x.id==id && x.type==type);
-  if(!c) return;
-  let text = buildShareText(c) + "\n\n🔗 " + getPageUrl();
-  navigator.clipboard.writeText(text).then(()=>{
-    showToast("✅ Details copied to clipboard!");
-  });
-}
-
-function showToast(msg){
-  let t = document.getElementById("toast");
-  t.innerText = msg;
-  t.style.display = "block";
-  setTimeout(()=> t.style.display="none", 2500);
-}
-
-// ---- EVENTS ----
-document.getElementById("search").addEventListener("input",  applyFilter);
-document.getElementById("filter").addEventListener("change", applyFilter);
-
-setInterval(load, 4000);
 load();
 
 </script>

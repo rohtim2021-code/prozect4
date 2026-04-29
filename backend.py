@@ -49,14 +49,18 @@ except Exception as e:
 except Exception as e:
     print("❌ MongoDB Connection Error:", e)
 
-#======= Cloud CREDENTIALS =================
+from dotenv import load_dotenv
+import os
+import cloudinary
+import cloudinary.uploader
 
-    cloudinary.config(
-    cloud_name="YOUR_CLOUD_NAME",
-    api_key="YOUR_API_KEY",
-    api_secret="YOUR_API_SECRET"
-)
-    
+load_dotenv()
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUD_NAME"),
+    api_key=os.getenv("API_KEY"),
+    api_secret=os.getenv("API_SECRET")
+) 
 
 # ================= ADMIN CREDENTIALS =================
 ADMIN_EMAIL    = "admin@gmail.com"
@@ -444,7 +448,23 @@ def login():
 # ================= REPORT MISSING =================
 @app.route("/api/report", methods=["POST"])
 def add_missing():
-    filename = save_file(request.files.get("photo"))
+
+    # 🔥 DEBUG
+    print("FILES:", request.files)
+    print("FORM:", request.form)
+
+    file = request.files.get("photo")
+
+    try:
+        if file and file.filename != "":
+            filename = save_file(file)
+        else:
+            print("No file received")
+            filename = ""
+    except Exception as e:
+        print("Upload Error:", e)
+        filename = ""
+
     doc = {
         "id":       next_id("missing"),
         "name":     request.form.get("name"),
@@ -467,6 +487,7 @@ def add_missing():
         "match":    0,
         "match_id": "-"
     }
+
     missing_col.insert_one(doc)
     return jsonify({"msg": "Missing report submitted"})
 
@@ -474,7 +495,23 @@ def add_missing():
 # ================= REPORT FOUND =================
 @app.route("/api/found", methods=["POST"])
 def add_found():
-    filename = save_file(request.files.get("photo"))
+
+    # 🔥 DEBUG
+    print("FILES:", request.files)
+    print("FORM:", request.form)
+
+    file = request.files.get("photo")
+
+    try:
+        if file and file.filename != "":
+            filename = save_file(file)
+        else:
+            print("No file received")
+            filename = ""
+    except Exception as e:
+        print("Upload Error:", e)
+        filename = ""
+
     doc = {
         "id":            next_id("found"),
         "name":          request.form.get("name"),
@@ -498,15 +535,15 @@ def add_found():
         "date":          request.form.get("date"),
         "details":       request.form.get("details"),
         "photo":         filename,
-        "match":           0,
-        "match_id":        "-",
-        "family_match":    0,
+        "match":         0,
+        "match_id":      "-",
+        "family_match":  0,
         "family_match_id": "-"
     }
+
     found_col.insert_one(doc)
     auto_match()
     return jsonify({"msg": "Found report submitted"})
-
 
 # ================= ADD FAMILY MEMBER =================
 @app.route("/api/family/add", methods=["POST"])

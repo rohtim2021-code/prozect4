@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,278 +7,71 @@
 <title>Report Missing Person</title>
 
 <style>
-:root{
-  --primary:#D94F1E;
-  --primary2:#F07245;
-  --bg:#FFFDF5;
-  --card:#fff;
-  --border:#E7E0D0;
-  --text:#1C1917;
-  --text2:#57534E;
-}
-
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-  font-family:'Segoe UI';
-  background:linear-gradient(160deg,#FFFDF5,#FFF8EC);
-}
-
-.hero{
-  text-align:center;
-  padding:40px 20px;
-}
-
-.badge{
-  display:inline-block;
-  padding:6px 14px;
-  background:#FFE8DE;
-  color:var(--primary);
-  border-radius:20px;
-  font-size:12px;
-  margin-bottom:10px;
-}
-
-.hero h1{font-size:2.3rem;}
-.hero span{color:var(--primary);}
-
-.container{
-  max-width:900px;
-  margin:20px auto;
-  padding:20px;
-}
-
-.card{
-  background:var(--card);
-  padding:30px;
-  border-radius:18px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.08);
-  border:1px solid var(--border);
-}
-
-.section-title{
-  margin:20px 0 10px;
-  color:var(--primary);
-  font-weight:600;
-}
-
-.input{margin-bottom:15px;}
-
-.input label{
-  font-size:13px;
-  color:var(--text2);
-}
-
-.input input,
-.input textarea,
-.input select{
-  width:100%;
-  padding:12px;
-  margin-top:5px;
-  border-radius:10px;
-  border:1px solid var(--border);
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-}
-
-.grid3{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:15px;
-}
-
-.btn{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  background:linear-gradient(135deg,var(--primary),var(--primary2));
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:15px;
-}
-
-.msg{
-  margin-top:12px;
-  padding:12px;
-  border-radius:8px;
-  display:none;
-}
-
-.success{background:#d1fae5;color:#065f46;}
-.error{background:#fee2e2;color:#991b1b;}
-
-.preview{
-  width:100%;
-  height:160px;
-  object-fit:cover;
-  border-radius:10px;
-  margin-top:10px;
-  display:none;
-}
-
-@media(max-width:700px){
-  .grid{grid-template-columns:1fr;}
-  .grid3{grid-template-columns:1fr;}
-}
+body{font-family:'Segoe UI';background:#FFFDF5;margin:0}
+.container{max-width:900px;margin:auto;padding:20px}
+.card{background:#fff;padding:25px;border-radius:12px}
+input,select,textarea{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:1px solid #ddd}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{padding:12px;background:#D94F1E;color:#fff;border:none;border-radius:8px;width:100%}
+.preview{width:100%;height:150px;object-fit:cover;display:none;margin-top:10px}
+.msg{margin-top:10px;padding:10px;border-radius:6px;display:none}
+.success{background:#d1fae5;color:#065f46}
+.error{background:#fee2e2;color:#991b1b}
 </style>
+
 </head>
-
 <body>
-
-<div class="hero">
-  <div class="badge">🚨 EMERGENCY REPORT</div>
-  <h1>Report <span>Missing Person</span></h1>
-</div>
 
 <div class="container">
 <div class="card">
 
-<form id="form">
+<h2>🚨 Report Missing Person</h2>
 
-<div class="section-title">👤 Basic Information</div>
-
-<div class="grid">
-  <div class="input">
-    <label>Full Name</label>
-    <input type="text" id="name" required>
-  </div>
-
-  <div class="input">
-    <label>Age</label>
-    <input type="number" id="age" required>
-  </div>
-</div>
-
-<div class="input">
-  <label>Aadhaar Number</label>
-  <input type="text" id="aadhar" maxlength="12" required>
-</div>
+<form id="form" enctype="multipart/form-data">
 
 <div class="grid">
-  <div class="input">
-    <label>Gender</label>
-    <select id="gender">
-      <option>Male</option>
-      <option>Female</option>
-    </select>
-  </div>
-
-  <div class="input">
-    <label>Height</label>
-    <input type="text" id="height">
-  </div>
+<input type="text" name="name" placeholder="Full Name" required>
+<input type="number" name="age" placeholder="Age" required>
 </div>
 
-<div class="section-title">📍 Last Seen Details</div>
+<input type="text" name="aadhar" placeholder="Aadhar Number" maxlength="12" required>
 
-<div class="input">
-  <label>Location (Full Address)</label>
-  <input type="text" id="location" required placeholder="e.g. Near Bus Stand, Main Road">
+<div class="grid">
+<select name="gender">
+<option>Male</option>
+<option>Female</option>
+</select>
+<input type="text" name="height" placeholder="Height">
 </div>
 
-<div class="grid3">
-  <div class="input">
-    <label>Village / Area</label>
-    <input type="text" id="village" placeholder="e.g. Rampur">
-  </div>
+<input type="text" name="location" placeholder="Location" required>
 
-  <div class="input">
-    <label>City / Town</label>
-    <input type="text" id="city" placeholder="e.g. Lucknow">
-  </div>
-
-  <div class="input">
-    <label>State</label>
-    <select id="state">
-      <option value="">-- Select State --</option>
-      <option>Andhra Pradesh</option>
-      <option>Arunachal Pradesh</option>
-      <option>Assam</option>
-      <option>Bihar</option>
-      <option>Chhattisgarh</option>
-      <option>Goa</option>
-      <option>Gujarat</option>
-      <option>Haryana</option>
-      <option>Himachal Pradesh</option>
-      <option>Jharkhand</option>
-      <option>Karnataka</option>
-      <option>Kerala</option>
-      <option>Madhya Pradesh</option>
-      <option>Maharashtra</option>
-      <option>Manipur</option>
-      <option>Meghalaya</option>
-      <option>Mizoram</option>
-      <option>Nagaland</option>
-      <option>Odisha</option>
-      <option>Punjab</option>
-      <option>Rajasthan</option>
-      <option>Sikkim</option>
-      <option>Tamil Nadu</option>
-      <option>Telangana</option>
-      <option>Tripura</option>
-      <option>Uttar Pradesh</option>
-      <option>Uttarakhand</option>
-      <option>West Bengal</option>
-      <option>Delhi</option>
-      <option>Jammu & Kashmir</option>
-      <option>Ladakh</option>
-      <option>Chandigarh</option>
-      <option>Puducherry</option>
-    </select>
-  </div>
+<div class="grid">
+<input type="text" name="village" placeholder="Village">
+<input type="text" name="city" placeholder="City">
 </div>
 
 <div class="grid">
-  <div class="input">
-    <label>PIN Code</label>
-    <input type="text" id="pincode" maxlength="6" placeholder="e.g. 226001">
-  </div>
-
-  <div class="input">
-    <label>Nearby Landmark</label>
-    <input type="text" id="nearby" placeholder="e.g. Near City Hospital, Railway Station">
-  </div>
+<input type="text" name="state" placeholder="State">
+<input type="text" name="pincode" placeholder="Pincode">
 </div>
 
-<div class="input">
-  <label>Date &amp; Time</label>
-  <input type="datetime-local" id="date">
-</div>
+<input type="text" name="nearby" placeholder="Nearby">
 
-<div class="section-title">📝 Description</div>
+<input type="datetime-local" name="date">
 
-<div class="input">
-  <textarea id="desc"></textarea>
-</div>
-
-<div class="section-title">📸 Upload Photo</div>
-
-<div class="input">
-  <input type="file" id="file" accept="image/*">
+<textarea name="details" placeholder="Details"></textarea>
+<div>
+  <input type="file" id="file" name="photo" accept="image/*">
   <img id="preview" class="preview">
 </div>
 
-<div class="section-title">📞 Contact Details</div>
-
 <div class="grid">
-  <div class="input">
-    <label>Phone Number</label>
-    <input type="text" id="phone">
-  </div>
-
-  <div class="input">
-    <label>Email Address</label>
-    <input type="email" id="email">
-  </div>
+<input type="text" name="phone" placeholder="Phone">
+<input type="email" name="email" placeholder="Email">
 </div>
 
-<button class="btn">🚨 Submit Report</button>
+<button class="btn">Submit</button>
 
 <div id="msg" class="msg"></div>
 
@@ -288,28 +82,12 @@ body{
 
 <script>
 
-const nameInput     = document.getElementById("name");
-const ageInput      = document.getElementById("age");
-const aadharInput   = document.getElementById("aadhar");
-const genderInput   = document.getElementById("gender");
-const heightInput   = document.getElementById("height");
-const locationInput = document.getElementById("location");
-const villageInput  = document.getElementById("village");
-const cityInput     = document.getElementById("city");
-const stateInput    = document.getElementById("state");
-const pincodeInput  = document.getElementById("pincode");
-const nearbyInput   = document.getElementById("nearby");
-const dateInput     = document.getElementById("date");
-const descInput     = document.getElementById("desc");
-const phoneInput    = document.getElementById("phone");
-const emailInput    = document.getElementById("email");
-
-const file    = document.getElementById("file");
+const file = document.getElementById("file");
 const preview = document.getElementById("preview");
-const form    = document.getElementById("form");
-const msg     = document.getElementById("msg");
+const form = document.getElementById("form");
+const msg = document.getElementById("msg");
 
-// IMAGE PREVIEW
+// Preview image
 file.onchange = e=>{
   const f = e.target.files[0];
   if(f){
@@ -318,47 +96,15 @@ file.onchange = e=>{
   }
 };
 
-// SUBMIT
+// Submit form
 form.onsubmit = async (e)=>{
   e.preventDefault();
 
-  if(aadharInput.value.length !== 12){
-    showMsg("Aadhaar must be 12 digits","error");
-    return;
-  }
+  const formData = new FormData(form);
 
-  if(pincodeInput.value && pincodeInput.value.length !== 6){
-    showMsg("PIN Code must be 6 digits","error");
-    return;
-  }
-
-  // Build full location string
-  let fullLocation = locationInput.value;
-  if(villageInput.value)  fullLocation += ", " + villageInput.value;
-  if(cityInput.value)     fullLocation += ", " + cityInput.value;
-  if(stateInput.value)    fullLocation += ", " + stateInput.value;
-  if(pincodeInput.value)  fullLocation += " - " + pincodeInput.value;
-
-  let formData = new FormData();
-
-  formData.append("name",     nameInput.value);
-  formData.append("age",      ageInput.value);
-  formData.append("aadhar",   aadharInput.value);
-  formData.append("gender",   genderInput.value);
-  formData.append("height",   heightInput.value);
-  formData.append("location", fullLocation);
-  formData.append("village",  villageInput.value);
-  formData.append("city",     cityInput.value);
-  formData.append("state",    stateInput.value);
-  formData.append("pincode",  pincodeInput.value);
-  formData.append("nearby",   nearbyInput.value);
-  formData.append("date",     dateInput.value);
-  formData.append("details",  descInput.value);
-  formData.append("phone",    phoneInput.value);
-  formData.append("email",    emailInput.value);
-
-  if(file.files[0]){
-    formData.append("photo", file.files[0]);
+  // Ensure photo goes
+  if(file.files.length > 0){
+    formData.set("photo", file.files[0]);
   }
 
   try{
@@ -369,7 +115,7 @@ form.onsubmit = async (e)=>{
 
     const result = await res.json();
 
-    if(res.status === 200){
+    if(res.ok){
       showMsg("Report submitted successfully","success");
       form.reset();
       preview.style.display="none";
@@ -377,7 +123,7 @@ form.onsubmit = async (e)=>{
       showMsg(result.error || "Error","error");
     }
 
-  } catch{
+  } catch(e){
     showMsg("Server error","error");
   }
 };
