@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Signup - Lost & Finder</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#fdf8f3;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.box{
+  width:350px;
+  background:#fff;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 0 15px rgba(0,0,0,0.1);
+  text-align:center;
+}
+
+h2{
+  margin-bottom:5px;
+}
+
+p{
+  color:#666;
+  font-size:14px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:1px solid #ddd;
+  border-radius:6px;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  background:#c95d2a;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+button:hover{
+  background:#a9441f;
+}
+
+.msg{
+  margin-top:10px;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.success{
+  color:green;
+}
+
+.error{
+  color:red;
+}
+
+a{
+  color:#c95d2a;
+  text-decoration:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+  <h2>🔍 Lost & Finder</h2>
+  <p>Create your account</p>
+
+  <!-- FORM -->
+  <input type="text" id="name" placeholder="Full Name">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <input type="text" id="mobile" placeholder="Mobile Number">
+
+  <button onclick="signup()">Create Account</button>
+
+  <!-- MESSAGE -->
+  <div id="msg" class="msg"></div>
+
+  <p style="margin-top:10px;">
+    Already have account? <a href="login.html">Login</a>
+  </p>
+
+</div>
+
+<script>
+
+async function signup(){
+
+  let name = document.getElementById("name").value.trim();
+  let email = document.getElementById("email").value.trim();
+  let password = document.getElementById("password").value.trim();
+  let mobile = document.getElementById("mobile").value.trim();
+
+  let msg = document.getElementById("msg");
+  msg.innerHTML = "";
+
+  // validation
+  if(!name || !email || !password || !mobile){
+    msg.innerHTML = "⚠️ All fields required";
+    msg.className = "msg error";
+    return;
+  }
+
+  if(mobile.length != 10){
+    msg.innerHTML = "⚠️ Enter valid mobile number";
+    msg.className = "msg error";
+    return;
+  }
+
+  let res = await fetch("/api/signup", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+      name,
+      email,
+      password,
+      mobile,
+      role:"user"
+    })
+  });
+
+  let data = await res.json();
+
+  if(data.error){
+    msg.innerHTML = "❌ " + data.error;
+    msg.className = "msg error";
+  }else{
+    msg.innerHTML = "✅ Account Created Successfully";
+    msg.className = "msg success";
+
+    setTimeout(()=>{
+      window.location.href = "login.html";
+    }, 1200);
+  }
+}
+
+</script>
+
+</body>
+</html>

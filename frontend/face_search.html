@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search by Face</title>
+
+<style>
+:root{
+  --primary:#D94F1E;
+  --primary2:#F07245;
+  --bg:#FFFDF5;
+  --card:#fff;
+  --border:#E7E0D0;
+  --text:#1C1917;
+  --text2:#57534E;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Segoe UI';
+  background:linear-gradient(160deg,#FFFDF5,#FFF8EC);
+}
+
+.hero{text-align:center;padding:40px 20px;}
+.badge{
+  display:inline-block;
+  padding:6px 14px;
+  background:#FFE8DE;
+  color:var(--primary);
+  border-radius:20px;
+  font-size:12px;
+  margin-bottom:10px;
+}
+.hero h1{font-size:2.2rem;}
+.hero span{color:var(--primary);}
+.hero p{color:var(--text2);margin-top:8px;}
+
+.container{
+  max-width:800px;
+  margin:20px auto;
+  padding:20px;
+}
+
+.card{
+  background:var(--card);
+  padding:30px;
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.08);
+  border:1px solid var(--border);
+}
+
+.input{margin-bottom:15px;}
+.input input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.preview{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:12px;
+  margin-top:10px;
+  display:none;
+}
+
+.result{
+  margin-top:20px;
+  padding:20px;
+  border-radius:12px;
+  background:#fff;
+  border:1px solid #eee;
+  display:none;
+  text-align:center;
+}
+
+/* square photo in result */
+.result-photo{
+  width:150px;
+  height:150px;
+  margin:10px auto;
+  overflow:hidden;
+  border-radius:10px;
+  border:3px solid var(--primary2);
+  cursor:pointer;
+}
+.result-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.result h3{
+  color:var(--primary);
+  margin-bottom:8px;
+}
+.result p{
+  font-size:14px;
+  color:var(--text2);
+  margin:4px 0;
+}
+
+/* view detail button inside result */
+.view-btn{
+  width:100%;
+  margin-top:14px;
+  padding:11px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:14px;
+}
+
+.msg{
+  margin-top:12px;
+  padding:12px;
+  border-radius:8px;
+  display:none;
+}
+.success{background:#d1fae5;color:#065f46;}
+.error  {background:#fee2e2;color:#991b1b;}
+.warning{background:#fef3c7;color:#92400e;}
+
+/* ============ DETAIL MODAL ============ */
+.modal-overlay{
+  display:none;
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.55);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.modal-overlay.open{display:flex;}
+
+.modal-doc{
+  background:#fff;
+  width:480px;
+  max-width:95vw;
+  max-height:90vh;
+  overflow-y:auto;
+  border-radius:16px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.2);
+  animation:popIn .2s ease;
+}
+.modal-doc::-webkit-scrollbar{width:4px;}
+.modal-doc::-webkit-scrollbar-thumb{background:#E7E0D0;border-radius:4px;}
+
+@keyframes popIn{
+  from{opacity:0;transform:scale(.93);}
+  to  {opacity:1;transform:scale(1);}
+}
+
+.doc-header{
+  background:linear-gradient(135deg,#D94F1E,#F07245);
+  padding:16px 20px;
+  border-radius:16px 16px 0 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.doc-header h3{color:#fff;font-size:15px;margin:0;}
+.doc-close{
+  background:rgba(255,255,255,0.25);
+  border:none;
+  color:#fff;
+  width:28px;height:28px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.doc-body{padding:22px;}
+
+/* big square photo in modal */
+.doc-photo{
+  width:160px;height:160px;
+  margin:0 auto 18px;
+  overflow:hidden;
+  border-radius:12px;
+  border:3px solid #F07245;
+  cursor:pointer;
+}
+.doc-photo img{width:100%;height:100%;object-fit:cover;}
+
+.doc-section{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--primary);
+  font-weight:bold;
+  margin:16px 0 8px;
+  border-bottom:1px solid #F3E7D9;
+  padding-bottom:4px;
+}
+
+.doc-row{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+  border-bottom:1px solid #faf5ee;
+  font-size:13px;
+}
+.doc-row:last-child{border:none;}
+.doc-row .lbl{color:#999;flex:0 0 120px;}
+.doc-row .val{color:#1C1917;font-weight:500;text-align:right;word-break:break-word;}
+
+/* match score strip */
+.match-strip{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#fff8f5;
+  border:1px solid #F3E7D9;
+  border-radius:8px;
+  padding:10px 14px;
+  margin-top:14px;
+}
+.match-strip .score{
+  font-size:22px;
+  font-weight:bold;
+  color:var(--primary);
+}
+.match-strip .lbl2{font-size:12px;color:#aaa;}
+
+.match-badge{
+  display:inline-block;
+  padding:4px 12px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:bold;
+}
+.match-high{background:#d1fae5;color:#065f46;}
+.match-low {background:#fee2e2;color:#991b1b;}
+
+/* full image popup */
+#imgpopup{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+#imgpopup img{
+  width:320px;height:320px;
+  object-fit:cover;
+  border-radius:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+  <div class="badge">🤖 AI SEARCH</div>
+  <h1>Search by <span>Face</span></h1>
+  <p>Upload a photo to find matching missing persons</p>
+</div>
+
+<div class="container">
+<div class="card">
+
+<form id="form">
+
+  <div class="input">
+    <input type="file" id="file" accept="image/*" required>
+    <img id="preview" class="preview">
+  </div>
+
+  <button class="btn">🔍 Search Face</button>
+
+  <div id="msg" class="msg"></div>
+
+  <div id="result" class="result"></div>
+
+</form>
+</div>
+</div>
+
+<!-- ============ DETAIL MODAL ============ -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-doc">
+
+    <div class="doc-header">
+      <h3 id="modalTitle">📋 Missing Person — Full Details</h3>
+      <button class="doc-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="doc-body" id="modalBody"></div>
+
+  </div>
+</div>
+
+<script>
+
+const file    = document.getElementById("file");
+const preview = document.getElementById("preview");
+let   matchPercent = 0;
+let   matchedPerson = null;
+
+// image preview
+file.onchange = e=>{
+  const f = e.target.files[0];
+  if(f){
+    preview.src = URL.createObjectURL(f);
+    preview.style.display = "block";
+  }
+};
+
+// form submit
+document.getElementById("form").onsubmit = async (e)=>{
+  e.preventDefault();
+
+  const msg       = document.getElementById("msg");
+  const resultDiv = document.getElementById("result");
+
+  msg.style.display    = "none";
+  resultDiv.style.display = "none";
+
+  const formData = new FormData();
+  formData.append("photo", file.files[0]);
+
+  try{
+    const res  = await fetch("/api/search-face", { method:"POST", body:formData });
+    const data = await res.json();
+
+    if(data.match){
+
+      matchPercent  = data.percent;
+      matchedPerson = data.person;
+
+      msg.style.display = "block";
+      msg.className     = "msg success";
+      msg.innerText     = "✅ Match Found (" + data.percent + "%)";
+
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = `
+        <h3>${data.person.name || "Unknown"}</h3>
+
+        <div class="result-photo" onclick="openImage('/uploads/${data.person.photo}')">
+          <img src="/uploads/${data.person.photo}">
+        </div>
+
+        <p>📍 ${data.person.location || "—"}</p>
+        <p>📞 ${data.person.phone    || "—"}</p>
+
+        <button class="view-btn" onclick="loadFullDetail()">
+          📋 View Full Details
+        </button>
+      `;
+
+    } else {
+      msg.style.display = "block";
+      msg.className     = "msg error";
+      msg.innerText     = "❌ No Match Found (" + (data.percent||0) + "%)";
+      resultDiv.style.display = "none";
+    }
+
+  } catch(err){
+    msg.style.display = "block";
+    msg.className     = "msg error";
+    msg.innerText     = "Server error!";
+  }
+};
+
+// load full detail from missing collection by name/photo
+async function loadFullDetail(){
+  try{
+    let person = null;
+
+    // search in missing list
+    let r1 = await fetch("/api/admin/missing");
+    let missingList = await r1.json();
+
+    // match by photo filename (most reliable)
+    person = missingList.find(x =>
+      x.photo && matchedPerson.photo &&
+      x.photo === matchedPerson.photo
+    );
+
+    // fallback: match by name
+    if(!person && matchedPerson.name){
+      person = missingList.find(x =>
+        x.name && x.name.toLowerCase() === matchedPerson.name.toLowerCase()
+      );
+    }
+
+    // fallback: also check found list
+    if(!person){
+      let r2 = await fetch("/api/found/all");
+      let foundList = await r2.json();
+      person = foundList.find(x =>
+        x.photo && matchedPerson.photo && x.photo === matchedPerson.photo
+      );
+    }
+
+    if(!person){
+      // use whatever came from search-face API
+      person = matchedPerson;
+    }
+
+    openModal(person);
+
+  } catch(e){
+    alert("Error loading full details.");
+  }
+}
+
+// build & show modal
+function openModal(d){
+  document.getElementById("detailModal").classList.add("open");
+
+  let badgeCls = matchPercent >= 80 ? "match-high" : "match-low";
+
+  document.getElementById("modalTitle").innerText =
+    "📋 " + (d.name || "Unknown") + " — Full Details";
+
+  document.getElementById("modalBody").innerHTML = `
+
+    ${d.photo ? `
+    <div class="doc-photo" onclick="openImage('/uploads/${d.photo}')">
+      <img src="/uploads/${d.photo}" alt="photo">
+    </div>` : `<div style="text-align:center;color:#bbb;margin-bottom:16px;font-size:13px;">No Photo Available</div>`}
+
+    <!-- PERSONAL -->
+    <div class="doc-section">👤 Personal Information</div>
+    <div class="doc-row"><span class="lbl">Full Name</span>  <span class="val">${d.name    || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Age</span>        <span class="val">${d.age     || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Gender</span>     <span class="val">${d.gender  || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Height</span>     <span class="val">${d.height  || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Aadhaar</span>    <span class="val">${d.aadhar  || "—"}</span></div>
+
+    <!-- CONTACT -->
+    <div class="doc-section">📞 Contact Details</div>
+    <div class="doc-row"><span class="lbl">Phone</span>      <span class="val">${d.phone   || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Email</span>      <span class="val">${d.email   || "—"}</span></div>
+
+    <!-- LOCATION -->
+    <div class="doc-section">📍 Last Seen Location</div>
+    <div class="doc-row"><span class="lbl">Location</span>   <span class="val">${d.location|| "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Village</span>    <span class="val">${d.village || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">City</span>       <span class="val">${d.city    || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">State</span>      <span class="val">${d.state   || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">PIN Code</span>   <span class="val">${d.pincode || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Nearby</span>     <span class="val">${d.nearby  || "—"}</span></div>
+
+    <!-- STATUS -->
+    <div class="doc-section">📋 Case Details</div>
+    <div class="doc-row"><span class="lbl">Status</span>     <span class="val">${d.status  || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Date & Time</span><span class="val">${d.date    || "—"}</span></div>
+    <div class="doc-row"><span class="lbl">Description</span><span class="val">${d.details || "—"}</span></div>
+
+    <!-- MATCH SCORE -->
+    <div class="match-strip">
+      <div>
+        <div style="font-weight:bold;font-size:13px;">Face Match Score</div>
+        <div class="lbl2">via OpenCV analysis</div>
+      </div>
+      <span class="match-badge ${badgeCls}" style="font-size:16px;padding:6px 16px;">
+        ${matchPercent}%
+      </span>
+    </div>
+
+  `;
+}
+
+function closeModal(){
+  document.getElementById("detailModal").classList.remove("open");
+}
+
+// close on overlay click
+document.getElementById("detailModal").addEventListener("click", function(e){
+  if(e.target === this) closeModal();
+});
+
+// full image popup
+function openImage(src){
+  let el = document.createElement("div");
+  el.id  = "imgpopup";
+  el.innerHTML = `<img src="${src}">`;
+  el.onclick = ()=> el.remove();
+  document.body.appendChild(el);
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Add Family Member</title>
+
+<style>
+body{
+  font-family:Segoe UI;
+  background:#fffdf5;
+  margin:0;
+}
+
+/* NAV */
+nav{
+  display:flex;
+  justify-content:space-between;
+  padding:15px 40px;
+  border-bottom:1px solid #eee;
+  background:#fff;
+}
+
+.container{
+  padding:40px 60px;
+  display:flex;
+  justify-content:center;
+}
+
+/* FORM BOX */
+.box{
+  width:460px;
+  background:#fff;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+h2{
+  margin-bottom:10px;
+}
+
+.sub{
+  color:#666;
+  margin-bottom:20px;
+}
+
+/* SECTION LABEL */
+.section-label{
+  font-size:13px;
+  font-weight:600;
+  color:#c95d2a;
+  margin:16px 0 4px;
+  padding-bottom:4px;
+  border-bottom:1px solid #f3e7d9;
+}
+
+/* INPUT */
+input, select, textarea{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border:1px solid #ddd;
+  border-radius:8px;
+  box-sizing:border-box;
+  font-family:Segoe UI;
+}
+
+textarea{
+  resize:vertical;
+  min-height:70px;
+}
+
+/* 2-col grid */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.grid input,
+.grid select{
+  margin:0;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  padding:12px;
+  background:#c95d2a;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:16px;
+}
+
+button:hover{
+  background:#a9441f;
+}
+
+/* MSG */
+.msg{
+  margin-top:10px;
+  font-weight:bold;
+}
+
+.success{color:green;}
+.error{color:red;}
+
+/* photo preview */
+.preview{
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  border-radius:8px;
+  margin-top:6px;
+  display:none;
+}
+
+@media(max-width:600px){
+  .container{padding:20px 16px;}
+  .box{width:100%;}
+  .grid{grid-template-columns:1fr;}
+}
+</style>
+
+</head>
+
+<body>
+
+<nav>
+  <div><b>🔎 Lost &amp; Finder</b></div>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="cases.html">Cases</a>
+    <a href="admin.html">Dashboard</a>
+  </div>
+</nav>
+
+<div class="container">
+<div class="box">
+
+  <h2>👨‍👩‍👧 Add Family Member</h2>
+  <div class="sub">Save family member details for quick identification</div>
+
+  <!-- PERSONAL INFO -->
+  <div class="section-label">👤 Personal Information</div>
+
+  <input type="text"   id="name"     placeholder="Full Name *">
+
+  <div class="grid">
+    <input type="number" id="age"    placeholder="Age *">
+    <select id="gender">
+      <option value="">Select Gender *</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+  </div>
+
+  <div class="grid">
+    <input type="text" id="relation" placeholder="Relation (Father, Mother…) *">
+    <input type="text" id="height"   placeholder="Height (e.g. 5'6)">
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section-label">📞 Contact Details</div>
+
+  <div class="grid">
+    <input type="text"  id="mobile"  placeholder="Mobile Number *" maxlength="10">
+    <input type="email" id="email"   placeholder="Email Address">
+  </div>
+
+  <input type="text" id="aadhar" placeholder="Aadhaar Number (12 digit) *" maxlength="12">
+
+  <!-- ADDRESS -->
+  <div class="section-label">📍 Address / Location</div>
+
+  <input type="text" id="location" placeholder="Full Address *">
+
+  <div class="grid">
+    <input type="text" id="village" placeholder="Village / Area">
+    <input type="text" id="city"    placeholder="City / Town">
+  </div>
+
+  <div class="grid">
+    <select id="state">
+      <option value="">-- Select State --</option>
+      <option>Andhra Pradesh</option>
+      <option>Arunachal Pradesh</option>
+      <option>Assam</option>
+      <option>Bihar</option>
+      <option>Chhattisgarh</option>
+      <option>Goa</option>
+      <option>Gujarat</option>
+      <option>Haryana</option>
+      <option>Himachal Pradesh</option>
+      <option>Jharkhand</option>
+      <option>Karnataka</option>
+      <option>Kerala</option>
+      <option>Madhya Pradesh</option>
+      <option>Maharashtra</option>
+      <option>Manipur</option>
+      <option>Meghalaya</option>
+      <option>Mizoram</option>
+      <option>Nagaland</option>
+      <option>Odisha</option>
+      <option>Punjab</option>
+      <option>Rajasthan</option>
+      <option>Sikkim</option>
+      <option>Tamil Nadu</option>
+      <option>Telangana</option>
+      <option>Tripura</option>
+      <option>Uttar Pradesh</option>
+      <option>Uttarakhand</option>
+      <option>West Bengal</option>
+      <option>Delhi</option>
+      <option>Jammu &amp; Kashmir</option>
+      <option>Ladakh</option>
+      <option>Chandigarh</option>
+      <option>Puducherry</option>
+    </select>
+    <input type="text" id="pincode" placeholder="PIN Code" maxlength="6">
+  </div>
+
+  <input type="text" id="nearby" placeholder="Nearby Landmark (e.g. Near Temple, Station)">
+
+  <!-- DESCRIPTION -->
+  <div class="section-label">📝 Description</div>
+  <textarea id="description" placeholder="Any additional details about the family member..."></textarea>
+
+  <!-- PHOTO -->
+  <div class="section-label">📸 Photo</div>
+  <input type="file" id="photo" accept="image/*">
+  <img id="preview" class="preview">
+
+  <button onclick="addMember()">✅ Add Member</button>
+
+  <div id="msg" class="msg"></div>
+
+</div>
+</div>
+
+<script>
+
+// photo preview
+document.getElementById("photo").onchange = function(e){
+  let f = e.target.files[0];
+  if(f){
+    let prev = document.getElementById("preview");
+    prev.src = URL.createObjectURL(f);
+    prev.style.display = "block";
+  }
+};
+
+async function addMember(){
+
+  let name        = document.getElementById("name").value.trim();
+  let age         = document.getElementById("age").value;
+  let gender      = document.getElementById("gender").value;
+  let relation    = document.getElementById("relation").value.trim();
+  let height      = document.getElementById("height").value.trim();
+  let mobile      = document.getElementById("mobile").value.trim();
+  let email       = document.getElementById("email").value.trim();
+  let aadhar      = document.getElementById("aadhar").value.trim();
+  let location    = document.getElementById("location").value.trim();
+  let village     = document.getElementById("village").value.trim();
+  let city        = document.getElementById("city").value.trim();
+  let state       = document.getElementById("state").value;
+  let pincode     = document.getElementById("pincode").value.trim();
+  let nearby      = document.getElementById("nearby").value.trim();
+  let description = document.getElementById("description").value.trim();
+  let photo       = document.getElementById("photo").files[0];
+
+  let msg = document.getElementById("msg");
+  msg.innerHTML = "";
+
+  // validation
+  if(!name || !age || !gender || !relation || !location || !aadhar || !mobile){
+    msg.innerHTML = "⚠️ All required fields must be filled";
+    msg.className = "msg error";
+    return;
+  }
+
+  if(aadhar.length != 12){
+    msg.innerHTML = "⚠️ Aadhaar must be 12 digits";
+    msg.className = "msg error";
+    return;
+  }
+
+  if(mobile.length != 10){
+    msg.innerHTML = "⚠️ Mobile must be 10 digits";
+    msg.className = "msg error";
+    return;
+  }
+
+  if(pincode && pincode.length != 6){
+    msg.innerHTML = "⚠️ PIN Code must be 6 digits";
+    msg.className = "msg error";
+    return;
+  }
+
+  // build full location string
+  let fullLocation = location;
+  if(village)  fullLocation += ", " + village;
+  if(city)     fullLocation += ", " + city;
+  if(state)    fullLocation += ", " + state;
+  if(pincode)  fullLocation += " - " + pincode;
+
+  let formData = new FormData();
+
+  formData.append("name",        name);
+  formData.append("age",         age);
+  formData.append("gender",      gender);
+  formData.append("relation",    relation);
+  formData.append("height",      height);
+  formData.append("phone",       mobile);
+  formData.append("email",       email);
+  formData.append("aadhar",      aadhar);
+  formData.append("location",    fullLocation);
+  formData.append("village",     village);
+  formData.append("city",        city);
+  formData.append("state",       state);
+  formData.append("pincode",     pincode);
+  formData.append("nearby",      nearby);
+  formData.append("details",     description);
+
+  if(photo){
+    formData.append("photo", photo);
+  }
+
+  try{
+    let res  = await fetch("/api/family/add", { method:"POST", body: formData });
+    let data = await res.json();
+
+    if(data.error){
+      msg.innerHTML = "❌ " + data.error;
+      msg.className = "msg error";
+    } else {
+      msg.innerHTML = "✅ Member Added Successfully";
+      msg.className = "msg success";
+
+      // clear form
+      document.querySelectorAll("input").forEach(i => i.value = "");
+      document.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+      document.querySelector("textarea").value = "";
+      document.getElementById("preview").style.display = "none";
+    }
+  } catch(e){
+    msg.innerHTML = "❌ Server error. Try again.";
+    msg.className = "msg error";
+  }
+}
+
+</script>
+
+</body>
+</html>

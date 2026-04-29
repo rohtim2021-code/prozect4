@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Found Person</title>
+
+<style>
+:root{
+  --primary:#D94F1E;
+  --primary2:#F07245;
+  --bg:#FFFDF5;
+  --card:#ffffff;
+  --border:#E7E0D0;
+  --text:#1C1917;
+  --text2:#57534E;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(160deg,#FFFDF5,#FFF8EC);
+}
+
+.hero{text-align:center;padding:40px 20px;}
+.hero .badge{
+  display:inline-block;padding:6px 12px;
+  background:#FFE8DE;color:var(--primary);
+  border-radius:20px;font-size:12px;margin-bottom:10px;
+}
+.hero h1{font-size:2.2rem;}
+.hero span{color:var(--primary);}
+.hero p{margin-top:8px;color:var(--text2);}
+
+.container{max-width:900px;margin:20px auto;padding:20px;}
+
+.card{
+  background:var(--card);
+  padding:30px;
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.08);
+  border:1px solid var(--border);
+}
+
+.section-title{margin:20px 0 10px;font-weight:bold;color:var(--primary);}
+
+.input{margin-bottom:15px;}
+.input label{font-size:0.85rem;color:var(--text2);}
+.input input,.input textarea,.input select{
+  width:100%;padding:12px;margin-top:5px;
+  border-radius:10px;border:1px solid var(--border);
+}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;}
+
+.optional-note{
+  font-size:11px;
+  color:#aaa;
+  font-style:italic;
+  margin-bottom:4px;
+  margin-top:-8px;
+}
+
+.btn{
+  width:100%;padding:14px;border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;font-weight:bold;cursor:pointer;margin-top:15px;
+}
+
+.msg{margin-top:12px;padding:10px;border-radius:8px;display:none;}
+.success{background:#d1fae5;color:#065f46;}
+.warning{background:#fef3c7;color:#92400e;}
+.error{background:#fecaca;color:#991b1b;}
+
+.preview{
+  width:150px;height:150px;
+  object-fit:cover;
+  border-radius:10px;
+  margin-top:10px;
+  display:none;
+}
+
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr;}
+  .grid3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+  <div class="badge">📍 FOUND REPORT</div>
+  <h1>Report <span>Found Person</span></h1>
+  <p>Help reunite someone with their family</p>
+</div>
+
+<div class="container">
+<div class="card">
+
+<form id="form">
+
+<!-- ========== YOUR INFO ========== -->
+<div class="section-title">👤 Your Information</div>
+
+<div class="grid">
+  <div class="input">
+    <label>Your Name</label>
+    <input type="text" name="reporter_name" required>
+  </div>
+
+  <div class="input">
+    <label>Phone</label>
+    <input type="text" name="phone" required pattern="[0-9]{10}">
+  </div>
+</div>
+
+<!-- ========== FOUND PERSON INFO ========== -->
+<div class="section-title">🧍 Found Person Details <span style="font-size:12px;font-weight:400;color:#aaa;">(fill whatever is known)</span></div>
+
+<div class="grid">
+  <div class="input">
+    <label>Name (if known)</label>
+    <input type="text" name="name" placeholder="Leave blank if unknown">
+  </div>
+
+  <div class="input">
+    <label>Gender</label>
+    <select name="gender">
+      <option value="">-- Select --</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+  </div>
+</div>
+
+<div class="grid3">
+  <div class="input">
+    <label>Age (Approx)</label>
+    <input type="number" name="age">
+  </div>
+
+  <div class="input">
+    <label>Age Type</label>
+    <select name="age_type">
+      <option value="approx">Approximate</option>
+      <option value="exact">Exact</option>
+    </select>
+  </div>
+
+  <div class="input">
+    <label>Height (cm / ft)</label>
+    <input type="text" name="height" placeholder="e.g. 5'4 or 162cm">
+  </div>
+</div>
+
+<div class="grid">
+  <div class="input">
+    <label>Aadhaar Number (if known)</label>
+    <input type="text" name="aadhar" maxlength="12" placeholder="12-digit number">
+  </div>
+
+  <div class="input">
+    <label>Date &amp; Time Found</label>
+    <input type="datetime-local" name="date">
+  </div>
+</div>
+
+<!-- ========== WHERE FOUND ========== -->
+<div class="section-title">📍 Where Was Person Found (Current Location)</div>
+
+<div class="input">
+  <label>Full Address / Location</label>
+  <input type="text" name="location" required placeholder="e.g. Near Bus Stand, Main Road">
+</div>
+
+<div class="grid3">
+  <div class="input">
+    <label>Village / Area</label>
+    <input type="text" name="found_village" placeholder="e.g. Rampur">
+  </div>
+
+  <div class="input">
+    <label>City / Town</label>
+    <input type="text" name="found_city" placeholder="e.g. Lucknow">
+  </div>
+
+  <div class="input">
+    <label>State</label>
+    <select name="found_state">
+      <option value="">-- Select State --</option>
+      <option>Andhra Pradesh</option>
+      <option>Arunachal Pradesh</option>
+      <option>Assam</option>
+      <option>Bihar</option>
+      <option>Chhattisgarh</option>
+      <option>Goa</option>
+      <option>Gujarat</option>
+      <option>Haryana</option>
+      <option>Himachal Pradesh</option>
+      <option>Jharkhand</option>
+      <option>Karnataka</option>
+      <option>Kerala</option>
+      <option>Madhya Pradesh</option>
+      <option>Maharashtra</option>
+      <option>Manipur</option>
+      <option>Meghalaya</option>
+      <option>Mizoram</option>
+      <option>Nagaland</option>
+      <option>Odisha</option>
+      <option>Punjab</option>
+      <option>Rajasthan</option>
+      <option>Sikkim</option>
+      <option>Tamil Nadu</option>
+      <option>Telangana</option>
+      <option>Tripura</option>
+      <option>Uttar Pradesh</option>
+      <option>Uttarakhand</option>
+      <option>West Bengal</option>
+      <option>Delhi</option>
+      <option>Jammu &amp; Kashmir</option>
+      <option>Ladakh</option>
+      <option>Chandigarh</option>
+      <option>Puducherry</option>
+    </select>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="input">
+    <label>PIN Code</label>
+    <input type="text" name="found_pincode" maxlength="6" placeholder="e.g. 226001">
+  </div>
+
+  <div class="input">
+    <label>Nearby Landmark</label>
+    <input type="text" name="found_nearby" placeholder="e.g. Near City Hospital, Railway Station">
+  </div>
+</div>
+
+<!-- ========== PERSON'S HOME ADDRESS ========== -->
+<div class="section-title">🏠 Person's Home Address <span style="font-size:12px;font-weight:400;color:#aaa;">(if known)</span></div>
+
+<div class="input">
+  <label>Home Address</label>
+  <input type="text" name="home_address" placeholder="Leave blank if unknown">
+</div>
+
+<div class="grid3">
+  <div class="input">
+    <label>Village / Area</label>
+    <input type="text" name="home_village" placeholder="e.g. Rampur">
+  </div>
+
+  <div class="input">
+    <label>City / Town</label>
+    <input type="text" name="home_city" placeholder="e.g. Varanasi">
+  </div>
+
+  <div class="input">
+    <label>State</label>
+    <select name="home_state">
+      <option value="">-- Select State --</option>
+      <option>Andhra Pradesh</option>
+      <option>Arunachal Pradesh</option>
+      <option>Assam</option>
+      <option>Bihar</option>
+      <option>Chhattisgarh</option>
+      <option>Goa</option>
+      <option>Gujarat</option>
+      <option>Haryana</option>
+      <option>Himachal Pradesh</option>
+      <option>Jharkhand</option>
+      <option>Karnataka</option>
+      <option>Kerala</option>
+      <option>Madhya Pradesh</option>
+      <option>Maharashtra</option>
+      <option>Manipur</option>
+      <option>Meghalaya</option>
+      <option>Mizoram</option>
+      <option>Nagaland</option>
+      <option>Odisha</option>
+      <option>Punjab</option>
+      <option>Rajasthan</option>
+      <option>Sikkim</option>
+      <option>Tamil Nadu</option>
+      <option>Telangana</option>
+      <option>Tripura</option>
+      <option>Uttar Pradesh</option>
+      <option>Uttarakhand</option>
+      <option>West Bengal</option>
+      <option>Delhi</option>
+      <option>Jammu &amp; Kashmir</option>
+      <option>Ladakh</option>
+      <option>Chandigarh</option>
+      <option>Puducherry</option>
+    </select>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="input">
+    <label>PIN Code</label>
+    <input type="text" name="home_pincode" maxlength="6" placeholder="e.g. 221001">
+  </div>
+
+  <div class="input">
+    <label>Nearby Landmark</label>
+    <input type="text" name="home_nearby" placeholder="e.g. Near Temple, School">
+  </div>
+</div>
+
+<!-- ========== DESCRIPTION ========== -->
+<div class="section-title">📝 Description</div>
+<div class="input">
+  <textarea name="details" placeholder="Describe clothing, physical features, behaviour, language spoken..."></textarea>
+</div>
+
+<!-- ========== PHOTO ========== -->
+<div class="section-title">📸 Upload Photo</div>
+<div class="input">
+  <input type="file" name="photo" id="file" accept="image/*">
+  <img id="preview" class="preview">
+</div>
+
+<button class="btn">🚨 Submit Found Report</button>
+
+<div id="msg" class="msg"></div>
+
+</form>
+
+</div>
+</div>
+
+<script>
+
+// preview
+file.onchange = e=>{
+  let f = e.target.files[0];
+  if(f){
+    preview.src = URL.createObjectURL(f);
+    preview.style.display="block";
+  }
+};
+
+// submit
+form.onsubmit = async e=>{
+  e.preventDefault();
+
+  let aadhar = form.querySelector('[name="aadhar"]').value;
+  if(aadhar && aadhar.length !== 12){
+    showMsg("Aadhaar must be 12 digits","error");
+    return;
+  }
+
+  let foundPincode = form.querySelector('[name="found_pincode"]').value;
+  if(foundPincode && foundPincode.length !== 6){
+    showMsg("Found PIN Code must be 6 digits","error");
+    return;
+  }
+
+  let homePincode = form.querySelector('[name="home_pincode"]').value;
+  if(homePincode && homePincode.length !== 6){
+    showMsg("Home PIN Code must be 6 digits","error");
+    return;
+  }
+
+  // Build full location string for found location
+  let foundVillage = form.querySelector('[name="found_village"]').value;
+  let foundCity    = form.querySelector('[name="found_city"]').value;
+  let foundState   = form.querySelector('[name="found_state"]').value;
+  let baseLocation = form.querySelector('[name="location"]').value;
+
+  let fullLocation = baseLocation;
+  if(foundVillage) fullLocation += ", " + foundVillage;
+  if(foundCity)    fullLocation += ", " + foundCity;
+  if(foundState)   fullLocation += ", " + foundState;
+  if(foundPincode) fullLocation += " - " + foundPincode;
+
+  let data = new FormData(form);
+  // Override location with full combined string
+  data.set("location", fullLocation);
+
+  try{
+    let res = await fetch("/api/found",{method:"POST",body:data});
+    if(res.ok){
+      setTimeout(loadResult, 500);
+      form.reset();
+      preview.style.display="none";
+    } else {
+      showMsg("Server error. Try again.","error");
+    }
+  } catch {
+    showMsg("Server error","error");
+  }
+};
+
+// load result
+async function loadResult(){
+  let res  = await fetch("/api/found/all");
+  let data = await res.json();
+  let last = data[data.length-1];
+
+  if(last.match >= 50){
+    msg.style.display="block";
+    msg.className="msg success";
+    msg.innerHTML = `
+      🎉 Match Found (${last.match}%)
+      <br><br>
+      <button onclick='viewPop(${JSON.stringify(last)})'
+      style="padding:10px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;">
+      View Match
+      </button>
+    `;
+  } else {
+    showMsg("⚠ No match found. Data saved!","warning");
+  }
+}
+
+// popup
+function viewPop(d){
+  document.body.innerHTML += `
+  <div id="pop" style="
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,.5);display:flex;justify-content:center;align-items:center;z-index:9999;
+  ">
+    <div style="background:#fff;padding:20px;border-radius:15px;width:320px;text-align:center;">
+      <h3 style="color:green;">✔ Match Found</h3>
+      ${d.photo ? `<img src="/uploads/${d.photo}" style="width:200px;height:200px;object-fit:cover;border-radius:10px;margin:10px 0;">` : ""}
+      <p><b>Name:</b> ${d.name || "—"}</p>
+      <p><b>Location:</b> ${d.location || "—"}</p>
+      <p><b>Match %:</b> ${d.match}%</p>
+      <p><b>Match ID:</b> ${d.match_id}</p>
+      <button onclick="document.getElementById('pop').remove()"
+        style="margin-top:12px;padding:8px 20px;border:none;border-radius:8px;cursor:pointer;background:#eee;">
+        Close
+      </button>
+    </div>
+  </div>`;
+}
+
+function showMsg(t,c){
+  msg.style.display="block";
+  msg.className="msg "+c;
+  msg.innerText=t;
+}
+
+</script>
+
+</body>
+</html>

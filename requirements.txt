@@ -1,0 +1,9 @@
+Flask
+flask-cors
+pymongo
+python-dotenv
+cloudinary
+opencv-python
+numpy
+requests
+certifi

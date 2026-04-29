@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login - Lost & Finder</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#fdf8f3;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.box{
+  width:350px;
+  background:#fff;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 0 15px rgba(0,0,0,0.1);
+  text-align:center;
+}
+
+h2{
+  margin-bottom:5px;
+}
+
+p{
+  color:#666;
+  font-size:14px;
+}
+
+.tabs{
+  display:flex;
+  margin:15px 0;
+}
+
+.tab{
+  flex:1;
+  padding:10px;
+  cursor:pointer;
+  background:#eee;
+  border-radius:6px;
+}
+
+.tab.active{
+  background:#e57a50;
+  color:#fff;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:1px solid #ddd;
+  border-radius:6px;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  background:#c95d2a;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+button:hover{
+  background:#a9441f;
+}
+
+.msg{
+  margin-top:10px;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.success{
+  color:green;
+}
+
+.error{
+  color:red;
+}
+
+a{
+  color:#c95d2a;
+  text-decoration:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+  <h2>🔍 Lost & Finder</h2>
+  <p>Login to continue</p>
+
+  <!-- USER / ADMIN -->
+  <div class="tabs">
+    <div class="tab active" onclick="setRole(this)">User</div>
+    <div class="tab" onclick="setRole(this)">Admin</div>
+  </div>
+
+  <!-- FORM -->
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+
+  <button onclick="login()">🔒 Login</button>
+
+  <!-- MESSAGE -->
+  <div id="msg" class="msg"></div>
+
+  <p style="margin-top:10px;">
+    Don't have account? <a href="signup.html">Signup</a>
+  </p>
+
+</div>
+
+<script>
+
+let role = "user";
+
+function setRole(el){
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  role = el.innerText.toLowerCase();
+}
+
+async function login(){
+
+  let email = document.getElementById("email").value.trim();
+  let password = document.getElementById("password").value.trim();
+  let msg = document.getElementById("msg");
+
+  msg.innerHTML = "";
+
+  if(!email || !password){
+    msg.innerHTML = "⚠️ Enter email & password";
+    msg.className = "msg error";
+    return;
+  }
+
+  let res = await fetch("/api/login", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      role
+    })
+  });
+
+  let data = await res.json();
+
+  if(data.error){
+    msg.innerHTML = "❌ Invalid password, try again";
+    msg.className = "msg error";
+  }else{
+    msg.innerHTML = "✅ Login successful";
+    msg.className = "msg success";
+
+    setTimeout(()=>{
+      window.location.href = data.redirect;
+    }, 1000);
+  }
+}
+
+</script>
+
+</body>
+</html>

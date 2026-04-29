@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost &amp; Finder — India's #1 Missing Person Search Portal</title>
+<meta name="description" content="AI-powered face recognition, real-time alerts, nationwide NGO-police network to find missing loved ones.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+
+<style>
+/* ── CASE CARDS ── */
+.case-card{
+  background:#fff;
+  border:1px solid #E7E0D0;
+  border-radius:16px;
+  overflow:hidden;
+  transition:.28s;
+  box-shadow:0 4px 14px rgba(0,0,0,0.06);
+  display:flex;
+  flex-direction:column;
+}
+.case-card:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(0,0,0,0.10);}
+.match-high-card{border:2px solid #16a34a;}
+
+.case-img-wrap{position:relative;}
+.case-img-wrap img{width:100%;height:210px;object-fit:cover;display:block;}
+
+.case-type-badge{
+  position:absolute;top:10px;right:10px;
+  padding:4px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;
+}
+.badge-missing{background:#ffe5e5;color:#dc2626;}
+.badge-found  {background:#d1fae5;color:#16a34a;}
+
+.case-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:5px;}
+.case-name{font-size:16px;font-weight:700;color:#1C1917;}
+.case-info{font-size:13px;color:#57534E;}
+.case-match{font-size:13px;font-weight:700;margin-top:2px;}
+
+/* share strip */
+.share-strip{
+  display:flex;gap:5px;
+  padding:10px 14px;
+  border-top:1px solid #f3e7d9;
+  background:#fffaf7;
+}
+.s-btn{
+  flex:1;
+  padding:6px 3px;
+  border:none;border-radius:7px;
+  font-size:11px;font-weight:700;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  transition:.15s;
+}
+.s-btn:hover{opacity:.85;}
+.s-wa{background:#25d366;color:#fff;}
+.s-fb{background:#1877f2;color:#fff;}
+.s-ig{background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);color:#fff;}
+.s-view{background:#F3E7D9;color:#c95d2a;font-weight:700;}
+
+/* ── VIEW MODAL ── */
+.popup-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.55);
+  justify-content:center;align-items:center;
+  z-index:9999;
+}
+.popup-overlay.open{display:flex;}
+
+.popup-doc{
+  background:#fff;
+  width:480px;
+  max-width:96vw;
+  max-height:90vh;
+  overflow-y:auto;
+  border-radius:16px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.22);
+  animation:popIn .18s ease;
+}
+.popup-doc::-webkit-scrollbar{width:4px;}
+.popup-doc::-webkit-scrollbar-thumb{background:#E7D9C7;border-radius:4px;}
+
+@keyframes popIn{
+  from{opacity:0;transform:scale(.93);}
+  to  {opacity:1;transform:scale(1);}
+}
+
+.pop-hdr{
+  background:linear-gradient(135deg,#D94F1E,#F07245);
+  padding:15px 20px;
+  border-radius:16px 16px 0 0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.pop-hdr h3{color:#fff;font-size:15px;margin:0;}
+.pop-close{
+  background:rgba(255,255,255,.25);
+  border:none;color:#fff;
+  width:26px;height:26px;
+  border-radius:50%;cursor:pointer;font-size:14px;
+  line-height:26px;text-align:center;
+}
+
+.pop-body{padding:20px;}
+
+.pop-photo{
+  width:150px;height:150px;
+  margin:0 auto 16px;
+  overflow:hidden;
+  border-radius:10px;
+  border:3px solid #F07245;
+  cursor:pointer;
+}
+.pop-photo img{width:100%;height:100%;object-fit:cover;}
+
+.pop-sec{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:#D94F1E;
+  font-weight:700;
+  margin:14px 0 7px;
+  border-bottom:1px solid #f3e7d9;
+  padding-bottom:3px;
+}
+
+.pop-row{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px solid #faf5ee;
+  font-size:13px;
+}
+.pop-row:last-child{border:none;}
+.pop-row .lbl{color:#999;flex:0 0 120px;font-size:12px;}
+.pop-row .val{color:#1C1917;font-weight:500;text-align:right;word-break:break-word;}
+
+.match-strip{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#fff8f5;border:1px solid #F3E7D9;
+  border-radius:8px;padding:10px 14px;margin-top:14px;
+}
+.match-badge{
+  display:inline-block;
+  padding:4px 12px;border-radius:20px;
+  font-size:13px;font-weight:700;
+}
+.match-hi{background:#d1fae5;color:#065f46;}
+.match-lo{background:#fee2e2;color:#991b1b;}
+.match-no{background:#f3f4f6;color:#aaa;}
+
+/* popup share buttons */
+.pop-share{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.pop-share-btn{
+  flex:1;min-width:90px;
+  padding:9px 6px;
+  border:none;border-radius:8px;
+  font-size:12px;font-weight:700;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:.15s;
+}
+.pop-share-btn:hover{opacity:.85;transform:translateY(-1px);}
+.psb-wa{background:#25d366;color:#fff;}
+.psb-fb{background:#1877f2;color:#fff;}
+.psb-ig{background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);color:#fff;}
+.psb-cp{background:#F3E7D9;color:#c95d2a;border:1px solid #E7D9C7;}
+
+/* full img popup */
+#imgpop{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:flex;justify-content:center;align-items:center;
+  z-index:99999;cursor:pointer;
+}
+#imgpop img{width:300px;height:300px;object-fit:cover;border-radius:12px;}
+
+/* toast */
+.toast{
+  position:fixed;bottom:26px;left:50%;transform:translateX(-50%);
+  background:#333;color:#fff;
+  padding:10px 22px;border-radius:8px;
+  font-size:13px;display:none;z-index:9998;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🔍</div>
+      Lost <span class="logo-amp">&amp;</span> Finder
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="cases.html">Cases</a>
+      <a href="index.html#how-it-works">How It Works</a>
+      <a href="index.html#features">Features</a>
+    </div>
+    <div class="nav-btns">
+      <a href="login.html" class="btn btn-outline btn-sm" id="nav-login">Login</a>
+      <a href="login.html" class="btn btn-primary btn-sm" id="nav-signup-btn">Sign Up Free</a>
+      <div id="nav-user" style="display:none;align-items:center;gap:8px">
+        <a href="#" class="btn btn-ghost btn-sm">👤 <span id="nav-uname"></span></a>
+        <button class="btn btn-sm btn-red btn-sm" id="nav-logout">Logout</button>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-tag">
+          <span class="pill-dot"></span>
+          India's #1 Missing Person Search Portal
+        </div>
+        <h1>Every Second<br><em>Counts.</em><br><span>Find Your</span><br>Loved Ones.</h1>
+        <p class="hero-sub">AI-powered face recognition, real-time alerts, and a nationwide network of families, NGOs, and police — all in one platform.</p>
+        <div class="hero-actions">
+          <a href="report.html" class="btn btn-primary btn-xl">🚨 Report Missing</a>
+          <a href="cases.html" class="btn btn-outline btn-xl">📋 View All Cases</a>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:26px;flex-wrap:wrap">
+          <span style="display:flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--text3);padding:5px 11px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2);font-weight:600">🏛️ DigiLocker</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--text3);padding:5px 11px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2);font-weight:600">🔒 Encrypted</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--text3);padding:5px 11px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2);font-weight:600">⚡ Real-Time</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--text3);padding:5px 11px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2);font-weight:600">🤝 50,000+ Families</span>
+        </div>
+      </div>
+      <div class="hero-img-wrap">
+        <svg viewBox="0 0 480 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;position:relative;z-index:1;filter:drop-shadow(0 20px 50px rgba(28,25,23,0.10))">
+          <defs>
+            <linearGradient id="hg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFFDF5"/><stop offset="100%" stop-color="#FEF0DD"/></linearGradient>
+            <linearGradient id="hg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#D94F1E"/><stop offset="100%" stop-color="#F07245"/></linearGradient>
+            <linearGradient id="hg4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0D8A7A"/><stop offset="100%" stop-color="#14B8A6"/></linearGradient>
+            <filter id="hsh"><feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="rgba(28,25,23,0.1)"/></filter>
+            <filter id="hgl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <linearGradient id="scanG" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#D94F1E" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#D94F1E" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#D94F1E" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect x="30" y="20" width="420" height="380" rx="24" fill="url(#hg1)" filter="url(#hsh)"/>
+          <rect x="30" y="20" width="420" height="3" rx="2" fill="url(#hg2)"/>
+          <rect x="30" y="20" width="420" height="52" rx="24" fill="#FFF9EE"/>
+          <rect x="30" y="58" width="420" height="14" fill="#FFF9EE"/>
+          <circle cx="56" cy="46" r="6" fill="#DC2626" opacity="0.7"/>
+          <circle cx="74" cy="46" r="6" fill="#D97706" opacity="0.7"/>
+          <circle cx="92" cy="46" r="6" fill="#16A34A" opacity="0.7"/>
+          <text x="120" y="51" font-size="11" fill="#57534E" font-weight="700" font-family="sans-serif">Lost &amp; Finder — Face Scan Console</text>
+          <rect x="370" y="36" width="62" height="20" rx="6" fill="rgba(22,163,74,0.12)"/>
+          <text x="401" y="51" text-anchor="middle" font-size="9" fill="#16A34A" font-weight="700" font-family="sans-serif">● LIVE</text>
+          <rect x="50" y="88" width="160" height="190" rx="14" fill="#FFFFFF" stroke="#E7E0D0" stroke-width="1.5"/>
+          <text x="130" y="108" text-anchor="middle" font-size="9" fill="#A8A29E" font-weight="700" font-family="sans-serif" letter-spacing="1">SCANNING FACE</text>
+          <circle cx="130" cy="168" r="54" fill="#FDF3E3"/>
+          <circle cx="130" cy="154" r="28" fill="#E7D9C8"/>
+          <ellipse cx="130" cy="212" rx="42" ry="28" fill="#E7D9C8"/>
+          <circle cx="120" cy="150" r="6" fill="#C4A882"/><circle cx="140" cy="150" r="6" fill="#C4A882"/>
+          <circle cx="121" cy="150" r="3" fill="#1C1917"/><circle cx="141" cy="150" r="3" fill="#1C1917"/>
+          <circle cx="122" cy="149" r="1.2" fill="#fff" opacity="0.8"/><circle cx="142" cy="149" r="1.2" fill="#fff" opacity="0.8"/>
+          <path d="M128 158 L125 165 L135 165" stroke="#B8A090" stroke-width="1.2" fill="none"/>
+          <path d="M120 171 Q130 178 140 171" stroke="#B8A090" stroke-width="1.8" fill="none"/>
+          <line x1="76" y1="144" x2="184" y2="144" stroke="#D94F1E" stroke-width="0.4" opacity="0.35"/>
+          <line x1="76" y1="160" x2="184" y2="160" stroke="#D94F1E" stroke-width="0.4" opacity="0.35"/>
+          <line x1="76" y1="176" x2="184" y2="176" stroke="#D94F1E" stroke-width="0.4" opacity="0.35"/>
+          <line x1="110" y1="118" x2="110" y2="224" stroke="#D94F1E" stroke-width="0.4" opacity="0.35"/>
+          <line x1="130" y1="118" x2="130" y2="224" stroke="#D94F1E" stroke-width="0.4" opacity="0.35"/>
+          <line x1="150" y1="118" x2="150" y2="224" stroke="#D94F1E" stroke-width="0.4" opacity="0.35"/>
+          <rect x="50" y="88" width="160" height="25" fill="url(#scanG)"><animateTransform attributeName="transform" type="translate" values="0,0;0,165;0,0" dur="2.2s" repeatCount="indefinite"/></rect>
+          <path d="M64 104 L64 88 L80 88" stroke="#D94F1E" stroke-width="2.5" fill="none"/>
+          <path d="M196 88 L210 88 L210 104" stroke="#D94F1E" stroke-width="2.5" fill="none"/>
+          <path d="M64 262 L64 278 L80 278" stroke="#D94F1E" stroke-width="2.5" fill="none"/>
+          <path d="M196 278 L210 278 L210 262" stroke="#D94F1E" stroke-width="2.5" fill="none"/>
+          <circle cx="120" cy="147" r="2.5" fill="#D94F1E" filter="url(#hgl)"/>
+          <circle cx="140" cy="147" r="2.5" fill="#D94F1E" filter="url(#hgl)"/>
+          <circle cx="130" cy="160" r="2.5" fill="#D94F1E" filter="url(#hgl)"/>
+          <line x1="210" y1="183" x2="236" y2="183" stroke="#1A5FA8" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <polygon points="234,178 242,183 234,188" fill="#1A5FA8"/>
+          <rect x="240" y="88" width="150" height="190" rx="14" fill="#FFFFFF" stroke="#0D8A7A" stroke-width="2"/>
+          <rect x="240" y="88" width="150" height="3" rx="2" fill="url(#hg4)"/>
+          <text x="315" y="108" text-anchor="middle" font-size="9" fill="#0D8A7A" font-weight="700" font-family="sans-serif">MATCH FOUND</text>
+          <circle cx="315" cy="163" r="44" fill="#F0FDF9"/>
+          <circle cx="315" cy="151" r="24" fill="#BBF7F1"/>
+          <ellipse cx="315" cy="199" rx="36" ry="22" fill="#BBF7F1"/>
+          <circle cx="307" cy="148" r="5" fill="#0D8A7A" opacity="0.8"/><circle cx="323" cy="148" r="5" fill="#0D8A7A" opacity="0.8"/>
+          <path d="M307 158 Q315 165 323 158" stroke="#0D8A7A" stroke-width="2" fill="none"/>
+          <text x="315" y="228" text-anchor="middle" font-size="10" fill="#57534E" font-family="sans-serif">AI Confidence</text>
+          <rect x="258" y="234" width="114" height="10" rx="5" fill="#F0FDF9"/>
+          <rect x="258" y="234" width="102" height="10" rx="5" fill="url(#hg4)"/>
+          <text x="315" y="259" text-anchor="middle" font-size="22" fill="#0D8A7A" font-weight="900" font-family="Georgia,serif">87%</text>
+          <rect x="50" y="292" width="360" height="92" rx="14" fill="#FFF9EE" stroke="#E7E0D0" stroke-width="1"/>
+          <circle cx="74" cy="316" r="8" fill="rgba(220,38,38,0.15)"/>
+          <text x="74" y="320" text-anchor="middle" font-size="10" fill="#DC2626" font-weight="700" font-family="sans-serif">!</text>
+          <text x="92" y="314" font-size="10" fill="#1C1917" font-weight="700" font-family="sans-serif">Rahul Sharma • Age 14 • Male</text>
+          <text x="92" y="327" font-size="9" fill="#A8A29E" font-family="sans-serif">📍 Last seen: Connaught Place, New Delhi</text>
+          <rect x="260" y="306" width="80" height="22" rx="7" fill="rgba(22,163,74,0.1)" stroke="rgba(22,163,74,0.3)" stroke-width="1"/>
+          <text x="300" y="321" text-anchor="middle" font-size="8.5" fill="#16A34A" font-weight="700" font-family="sans-serif">✓ NOTIFY FAMILY</text>
+          <circle cx="74" cy="350" r="8" fill="rgba(26,95,168,0.12)"/>
+          <text x="74" y="354" text-anchor="middle" font-size="10" fill="#1A5FA8" font-family="sans-serif">i</text>
+          <text x="92" y="348" font-size="10" fill="#57534E" font-family="sans-serif">Match found at: Dharavi Shelter, Mumbai</text>
+          <text x="92" y="361" font-size="9" fill="#A8A29E" font-family="sans-serif">🕐 Case open for 3 days  |  Case ID: LF-2026-0312</text>
+          <rect x="260" y="340" width="80" height="22" rx="7" fill="rgba(217,79,30,0.1)" stroke="rgba(217,79,30,0.3)" stroke-width="1"/>
+          <text x="300" y="355" text-anchor="middle" font-size="8.5" fill="#D94F1E" font-weight="700" font-family="sans-serif">→ VIEW CASE</text>
+        </svg>
+        <div class="hero-float-badge" style="top:8%;left:-20px">
+          <span style="font-size:1.6rem">✅</span>
+          <div><div class="badge-num" style="color:var(--green)">2,847+</div><div style="font-size:0.72rem;color:var(--text3);font-weight:600">People Reunited</div></div>
+        </div>
+        <div class="hero-float-badge" style="bottom:14%;right:-16px">
+          <span style="font-size:1.6rem">⚡</span>
+          <div><div class="badge-num" style="color:var(--primary)">5,124+</div><div style="font-size:0.72rem;color:var(--text3);font-weight:600">Cases Registered</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat-cell"><div class="num">5,124+</div><div class="lbl">Cases Registered</div></div>
+      <div class="stat-cell"><div class="num">2,847+</div><div class="lbl">People Reunited</div></div>
+      <div class="stat-cell"><div class="num">320+</div><div class="lbl">NGO Partners</div></div>
+      <div class="stat-cell"><div class="num">28+</div><div class="lbl">States Covered</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ LATEST 4 CASES ══ -->
+<section class="section" id="cases" style="background:var(--bg2)">
+  <div class="container">
+    <div class="pill-label"><span class="pill-dot"></span>ACTIVE CASES</div>
+    <h2 class="sec-heading">Recent Missing Persons</h2>
+    <p class="sec-sub">Help bring them home — every share matters. Login to report information.</p>
+
+    <div class="live-bar">
+      <span class="live-dot"></span>
+      <strong>Live Update:</strong> &nbsp;New cases are being added. Please review, share, and help.
+    </div>
+
+    <div class="cases-grid" id="homepage-cases" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px;"></div>
+
+    <div style="text-align:center;margin-top:36px">
+      <a href="cases.html" class="btn btn-primary btn-lg">View All Cases →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ AI FACE RECOGNITION ══ -->
+<section class="section">
+  <div class="container">
+    <div class="split-grid">
+      <div style="display:flex;justify-content:center;align-items:center">
+        <svg viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;border-radius:20px;filter:drop-shadow(0 12px 40px rgba(26,95,168,0.12))">
+          <defs>
+            <linearGradient id="ag1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EFF6FF"/><stop offset="100%" stop-color="#DBEAFE"/></linearGradient>
+            <linearGradient id="ag2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#1A5FA8"/><stop offset="100%" stop-color="#3B82C4"/></linearGradient>
+            <linearGradient id="scanA" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#1A5FA8" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#1A5FA8" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#1A5FA8" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="aglow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect width="360" height="300" fill="url(#ag1)" rx="20"/>
+          <rect x="80" y="40" width="200" height="200" rx="20" fill="#fff" stroke="#BFDBFE" stroke-width="2"/>
+          <circle cx="180" cy="140" r="66" fill="#EFF6FF"/>
+          <circle cx="180" cy="122" r="36" fill="#DBEAFE"/>
+          <ellipse cx="180" cy="188" rx="52" ry="30" fill="#DBEAFE"/>
+          <circle cx="166" cy="118" r="7" fill="#1A5FA8" opacity="0.7"/><circle cx="194" cy="118" r="7" fill="#1A5FA8" opacity="0.7"/>
+          <circle cx="167" cy="118" r="3.5" fill="#1C1917"/><circle cx="195" cy="118" r="3.5" fill="#1C1917"/>
+          <path d="M177 126 L174 134 L186 134" stroke="#93C5FD" stroke-width="1.5" fill="none"/>
+          <path d="M167 141 Q180 150 193 141" stroke="#1A5FA8" stroke-width="2" fill="none" opacity="0.7"/>
+          <rect x="80" y="40" width="200" height="28" fill="url(#scanA)"><animateTransform attributeName="transform" type="translate" values="0,0;0,172;0,0" dur="2.4s" repeatCount="indefinite"/></rect>
+          <path d="M80 62 L80 40 L102 40" stroke="#1A5FA8" stroke-width="3" fill="none"/>
+          <path d="M258 40 L280 40 L280 62" stroke="#1A5FA8" stroke-width="3" fill="none"/>
+          <path d="M80 218 L80 240 L102 240" stroke="#1A5FA8" stroke-width="3" fill="none"/>
+          <path d="M258 240 L280 240 L280 218" stroke="#1A5FA8" stroke-width="3" fill="none"/>
+          <circle cx="166" cy="114" r="3" fill="#D94F1E" filter="url(#aglow)"/>
+          <circle cx="194" cy="114" r="3" fill="#D94F1E" filter="url(#aglow)"/>
+          <circle cx="180" cy="126" r="3" fill="#D94F1E" filter="url(#aglow)"/>
+          <rect x="80" y="256" width="200" height="26" rx="8" fill="#fff" stroke="#BFDBFE" stroke-width="1.5"/>
+          <text x="98" y="273" font-size="9.5" fill="#57534E" font-family="sans-serif" font-weight="600">Confidence:</text>
+          <rect x="168" y="263" width="96" height="10" rx="5" fill="#DBEAFE"/>
+          <rect x="168" y="263" width="84" height="10" rx="5" fill="url(#ag2)"/>
+          <text x="270" y="273" text-anchor="end" font-size="9.5" fill="#1A5FA8" font-weight="700" font-family="sans-serif">87%</text>
+        </svg>
+      </div>
+      <div>
+        <div class="sec-label">🤖 AI POWERED</div>
+        <h2 style="margin-bottom:16px">Face Recognition<br>Technology</h2>
+        <p style="margin-bottom:22px;line-height:1.8">Our AI scans thousands of case photos in seconds, identifying individuals from a single uploaded photo.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:22px;height:22px;border-radius:6px;background:rgba(26,95,168,0.1);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0">✅</span><span style="font-size:0.88rem;color:var(--text2)">128-point facial landmark mapping</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:22px;height:22px;border-radius:6px;background:rgba(26,95,168,0.1);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0">✅</span><span style="font-size:0.88rem;color:var(--text2)">Real-time scan across entire database</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:22px;height:22px;border-radius:6px;background:rgba(26,95,168,0.1);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0">✅</span><span style="font-size:0.88rem;color:var(--text2)">Match percentage with confidence score</span></div>
+        </div>
+        <a href="face_search.html" class="btn btn-blue btn-lg">🤖 Try Face Search</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ QUICK ACTIONS ══ -->
+<section class="section" id="actions" style="background:var(--bg2)">
+  <div class="container">
+    <div class="sec-label">⚡ QUICK ACTIONS</div>
+    <h2 class="sec-heading">What Would You Like to Do?</h2>
+    <p class="sec-sub">Login required to access all features — your data stays private and encrypted.</p>
+    <div class="action-grid">
+      <a href="report.html" class="action-tile highlight-tile">
+        <div class="tile-icon ti-orange">⚠️</div>
+        <h3>Report Missing</h3>
+        <p>Upload details of a missing person and notify the entire network instantly</p>
+      </a>
+      <a href="face_search.html" class="action-tile">
+        <div class="tile-icon ti-blue">🤖</div>
+        <h3>Search by Face</h3>
+        <p>Upload a photo — AI finds matching faces across the database instantly</p>
+      </a>
+      <a href="found.html" class="action-tile">
+        <div class="tile-icon ti-green">✅</div>
+        <h3>Report Found Person</h3>
+        <p>Found someone? Report here so their family can be reunited immediately</p>
+      </a>
+      <a href="family.html" class="action-tile">
+        <div class="tile-icon ti-teal">👨‍👩‍👧</div>
+        <h3>Add Family Members</h3>
+        <p>Register family in advance for instant emergency alerts</p>
+      </a>
+      <a href="search.html" class="action-tile">
+        <div class="tile-icon ti-purple">🪪</div>
+        <h3>Search by Identity</h3>
+        <p>Search using Aadhaar, Voter ID, or Passport number</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section class="section" id="how-it-works" style="background:var(--bg2)">
+  <div class="container">
+    <div style="max-width:680px;margin:0 auto">
+      <div style="text-align:center">
+        <div class="sec-label">PROCESS</div>
+        <h2 class="sec-heading">How Lost &amp; Finder Works</h2>
+        <p class="sec-sub" style="margin:0 auto 40px">Simple, fast, and effective in just 4 steps</p>
+      </div>
+      <div class="steps">
+        <div class="step-item"><div class="step-num">01</div><div class="step-text"><h3>Register &amp; Create Profile</h3><p>Sign up in seconds. Add your family members' photos and identity documents in advance.</p></div></div>
+        <div class="step-item"><div class="step-num">02</div><div class="step-text"><h3>Upload Missing Person Details</h3><p>Fill in name, age, last seen location, and upload a photo. AI immediately scans for matches.</p></div></div>
+        <div class="step-item"><div class="step-num">03</div><div class="step-text"><h3>Instant Network Alerts</h3><p>Thousands of volunteers, NGOs, and police stations receive real-time alerts.</p></div></div>
+        <div class="step-item"><div class="step-num">04</div><div class="step-text"><h3>Reunited. Safely &amp; Quickly.</h3><p>When a match is found, you're notified immediately via SMS and WhatsApp.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="sec-label">WHY CHOOSE US</div>
+    <h2 class="sec-heading">Powerful Features</h2>
+    <p class="sec-sub">Built with cutting-edge technology and compassion</p>
+    <div class="feat-grid">
+      <div class="feat-card" style="border-top:3px solid var(--blue)"><div class="feat-icon">🤖</div><h3>AI Face Recognition</h3><p>Identifies individuals from a single photo — no verbal description needed.</p></div>
+      <div class="feat-card" style="border-top:3px solid var(--primary)"><div class="feat-icon">🔔</div><h3>Real-Time Alerts</h3><p>Instant notifications the moment a match is found — family, NGOs, and police.</p></div>
+      <div class="feat-card" style="border-top:3px solid var(--teal)"><div class="feat-icon">🔒</div><h3>Privacy First</h3><p>Number masking, encrypted storage, and full login protection.</p></div>
+      <div class="feat-card" style="border-top:3px solid var(--green)"><div class="feat-icon">🏛️</div><h3>Govt. Database</h3><p>Connected with DigiLocker, NITI Aayog and state police networks.</p></div>
+      <div class="feat-card" style="border-top:3px solid var(--amber)"><div class="feat-icon">✅</div><h3>Found Person Reports</h3><p>Anyone can file a Found Report — family notified in seconds.</p></div>
+      <div class="feat-card" style="border-top:3px solid var(--purple)"><div class="feat-icon">⚡</div><h3>Auto Case Matching</h3><p>Instantly checks if the missing person is at a shelter or NGO care.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EMERGENCY STRIP ══ -->
+<div style="background:linear-gradient(135deg,#1A5FA8,#0D8A7A);padding:20px 0">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:2rem">🚨</span>
+        <div>
+          <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:#fff">Emergency? Don't wait!</div>
+          <div style="font-size:0.85rem;color:rgba(255,255,255,0.8)">Child helpline 1098 · Police 100 · Women helpline 1091</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="tel:1098" class="btn btn-white btn-sm">📞 Call 1098</a>
+        <a href="report.html" class="btn btn-outline-white btn-sm">🚨 Report Online</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CTA ══ -->
+<section class="section">
+  <div class="container">
+    <div class="cta-box">
+      <h2>Join 50,000+ Families on Lost &amp; Finder</h2>
+      <p>Register today — it's free. Add your family members in advance and get instant alerts in any emergency.</p>
+      <div class="cta-actions">
+        <a href="login.html" class="btn btn-white btn-xl">🚀 Sign Up Free</a>
+        <a href="tel:+918707624604" class="btn btn-outline-white btn-xl">📞 Call Helpline</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:flex;align-items:center;justify-content:center;font-size:1.1rem">🔍</div>
+          <span style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:900;color:#fff">Lost &amp; Finder</span>
+        </div>
+        <p>India's most trusted missing person search platform. Powered by AI, driven by compassion.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <a href="face_search.html">Search by Face</a>
+        <a href="search.html">Search by Identity</a>
+        <a href="report.html">Report Missing</a>
+        <a href="found.html">Report Found</a>
+        <a href="family.html">Add Family</a>
+      </div>
+      <div class="footer-col">
+        <h4>Login As</h4>
+        <a href="login.html">General User</a>
+        <a href="login.html">NGO / Social Worker</a>
+        <a href="login.html">Police Station</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="tel:+918707624604">+91 87076 24604</a>
+        <a href="mailto:info@lostandfinder.in">info@lostandfinder.in</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Lost &amp; Finder. All rights reserved.</span>
+      <span>Technology by Laxnar AI Innovations</span>
+    </div>
+  </div>
+</footer>
+
+<!-- VIEW MODAL -->
+<div class="popup-overlay" id="viewPopup">
+  <div class="popup-doc">
+    <div class="pop-hdr">
+      <h3 id="popTitle">📋 Person Details</h3>
+      <button class="pop-close" onclick="closePopup()">✕</button>
+    </div>
+    <div class="pop-body" id="popBody"></div>
+  </div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"></div>
+
+<script src="js/shared.js"></script>
+<script>
+
+let homeCases = [];
+
+// ---- LOAD LATEST 4 CASES ----
+async function loadHomeCases(){
+  try{
+    let r1 = await fetch("/api/admin/missing");
+    let missing = await r1.json();
+    let r2 = await fetch("/api/found/all");
+    let found   = await r2.json();
+
+    missing = missing.map(x=>({...x, type:"missing"}));
+    found   = found.map(x=>({...x, type:"found"}));
+
+    // combine, sort by id desc, take latest 4
+    let all = [...missing, ...found]
+      .sort((a,b)=> (b.id||0) - (a.id||0))
+      .slice(0, 4);
+
+    homeCases = all;
+    renderCases(all);
+  }catch(e){
+    document.getElementById("homepage-cases").innerHTML = "<p style='color:#aaa;text-align:center;padding:20px;'>⚠️ Backend not running</p>";
+  }
+}
+
+function renderCases(data){
+  let grid = document.getElementById("homepage-cases");
+  if(!data.length){
+    grid.innerHTML = "<p style='color:#aaa;text-align:center;padding:20px;'>No cases yet.</p>";
+    return;
+  }
+
+  grid.innerHTML = data.map((c,i)=>`
+  <div class="case-card ${c.match>=80?'match-high-card':''}">
+
+    <div class="case-img-wrap">
+      <img src="${c.photo ? '/uploads/'+c.photo : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}"
+           onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+      <div class="case-type-badge ${c.type==='missing'?'badge-missing':'badge-found'}">
+        ${c.type.toUpperCase()}
+      </div>
+    </div>
+
+    <div class="case-body">
+      <div class="case-name">${c.name || "Unknown"}</div>
+      <div class="case-info">📍 ${(c.location||"—").substring(0,35)}</div>
+      <div class="case-info">📞 ${c.phone||"—"} &nbsp;|&nbsp; Age: ${c.age||"—"}</div>
+      <div class="case-info">⚧ ${c.gender||"—"}</div>
+      <div class="case-match" style="color:${c.match>=80?'#16a34a':'#D94F1E'}">
+        ${c.match>0 ? `🔗 Match: ${c.match}%` : ""}
+      </div>
+    </div>
+
+    <div class="share-strip" onclick="event.stopPropagation()">
+      <button class="s-btn s-view" onclick="openView(${i})">📋 View</button>
+      <button class="s-btn s-wa"   onclick="shareWA(${i})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.553 4.11 1.52 5.832L0 24l6.303-1.496A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.6a9.562 9.562 0 01-4.868-1.332l-.349-.207-3.617.858.898-3.522-.228-.362A9.555 9.555 0 012.4 12C2.4 6.698 6.698 2.4 12 2.4S21.6 6.698 21.6 12 17.302 21.6 12 21.6z"/></svg>
+        WA
+      </button>
+      <button class="s-btn s-fb"  onclick="shareFB()">FB</button>
+      <button class="s-btn s-ig"  onclick="shareIG(${i})">IG</button>
+    </div>
+
+  </div>
+  `).join("");
+}
+
+// ---- VIEW POPUP ----
+function openView(idx){
+  let c = homeCases[idx];
+  if(!c) return;
+
+  let pct     = c.match || 0;
+  let bdgCls  = pct>=80 ? "match-hi" : pct>0 ? "match-lo" : "match-no";
+  let typeLabel = c.type==="missing" ? "🔴 Missing Person" : "🟢 Found Person";
+
+  document.getElementById("popTitle").innerText = typeLabel + " — #" + c.id;
+
+  document.getElementById("popBody").innerHTML = `
+
+    ${c.photo ? `
+    <div class="pop-photo" onclick="openImg('/uploads/${c.photo}')">
+      <img src="/uploads/${c.photo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+    </div>` : ""}
+
+    <div class="pop-sec">👤 Personal Information</div>
+    <div class="pop-row"><span class="lbl">Full Name</span> <span class="val">${c.name    ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Age</span>       <span class="val">${c.age     ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Gender</span>    <span class="val">${c.gender  ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Height</span>    <span class="val">${c.height  ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Aadhaar</span>   <span class="val">${c.aadhar  ||"—"}</span></div>
+
+    <div class="pop-sec">📞 Contact Details</div>
+    <div class="pop-row"><span class="lbl">Phone</span>     <span class="val">${c.phone   ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Email</span>     <span class="val">${c.email   ||"—"}</span></div>
+
+    <div class="pop-sec">📍 Location Details</div>
+    <div class="pop-row"><span class="lbl">Location</span>  <span class="val">${c.location||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Village</span>   <span class="val">${c.village ||c.found_village||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">City</span>      <span class="val">${c.city    ||c.found_city   ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">State</span>     <span class="val">${c.state   ||c.found_state  ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">PIN Code</span>  <span class="val">${c.pincode ||c.found_pincode||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Nearby</span>    <span class="val">${c.nearby  ||c.found_nearby ||"—"}</span></div>
+
+    <div class="pop-sec">📋 Case Details</div>
+    <div class="pop-row"><span class="lbl">Status</span>    <span class="val">${c.status  ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Date</span>      <span class="val">${c.date    ||"—"}</span></div>
+    <div class="pop-row"><span class="lbl">Description</span><span class="val">${c.details||"—"}</span></div>
+
+    ${pct>0 ? `
+    <div class="pop-sec">🔗 Match Info</div>
+    <div class="match-strip">
+      <div><div style="font-weight:700;font-size:13px;">Match Score</div><div style="font-size:12px;color:#aaa;">cross-database match</div></div>
+      <span class="match-badge ${bdgCls}" style="font-size:16px;padding:5px 14px;">${pct}%</span>
+    </div>` : ""}
+
+    <div class="pop-sec">🔗 Share This Case</div>
+    <div class="pop-share">
+      <button class="pop-share-btn psb-wa" onclick="shareWA(${idx})">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.553 4.11 1.52 5.832L0 24l6.303-1.496A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.6a9.562 9.562 0 01-4.868-1.332l-.349-.207-3.617.858.898-3.522-.228-.362A9.555 9.555 0 012.4 12C2.4 6.698 6.698 2.4 12 2.4S21.6 6.698 21.6 12 17.302 21.6 12 21.6z"/></svg>
+        WhatsApp
+      </button>
+      <button class="pop-share-btn psb-fb" onclick="shareFB()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+        Facebook
+      </button>
+      <button class="pop-share-btn psb-ig" onclick="shareIG(${idx})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Instagram
+      </button>
+      <button class="pop-share-btn psb-cp" onclick="copyCase(${idx})">📋 Copy</button>
+    </div>
+  `;
+
+  document.getElementById("viewPopup").classList.add("open");
+}
+
+function closePopup(){
+  document.getElementById("viewPopup").classList.remove("open");
+}
+document.getElementById("viewPopup").addEventListener("click", function(e){
+  if(e.target===this) closePopup();
+});
+
+// ---- SHARE FUNCTIONS ----
+function buildText(c){
+  let s  = c.type==="missing" ? "🚨 MISSING PERSON ALERT" : "🟢 FOUND PERSON";
+  let t  = `${s}\n\n`;
+  t += `👤 Name: ${c.name||"Unknown"}\n`;
+  t += `🎂 Age: ${c.age||"—"} | Gender: ${c.gender||"—"}\n`;
+  t += `📍 Location: ${c.location||"—"}\n`;
+  if(c.city||c.found_city)   t += `🏙 City: ${c.city||c.found_city}\n`;
+  if(c.state||c.found_state) t += `🗺 State: ${c.state||c.found_state}\n`;
+  t += `📞 Contact: ${c.phone||"—"}\n`;
+  if(c.details) t += `📝 ${c.details}\n`;
+  t += `\n🔗 ${window.location.origin}/cases.html\n#MissingPerson #LostAndFound #India`;
+  return t;
+}
+
+function shareWA(idx){
+  let c = homeCases[idx];
+  window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(buildText(c)), "_blank");
+}
+
+function shareFB(){
+  window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(window.location.origin+"/cases.html"), "_blank");
+}
+
+function shareIG(idx){
+  let c = homeCases[idx];
+  navigator.clipboard.writeText(buildText(c)).then(()=>{
+    showToast("📋 Caption copied! Opening Instagram...");
+    setTimeout(()=> window.open("https://www.instagram.com/","_blank"), 1000);
+  });
+}
+
+function copyCase(idx){
+  let c = homeCases[idx];
+  navigator.clipboard.writeText(buildText(c)).then(()=> showToast("✅ Copied to clipboard!"));
+}
+
+function openImg(src){
+  let el = document.createElement("div");
+  el.id = "imgpop";
+  el.innerHTML = `<img src="${src}">`;
+  el.onclick = ()=> el.remove();
+  document.body.appendChild(el);
+}
+
+function showToast(msg){
+  let t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.display = "block";
+  setTimeout(()=> t.style.display="none", 2500);
+}
+
+// auto refresh every 5s
+loadHomeCases();
+setInterval(loadHomeCases, 5000);
+</script>
+</body>
+</html>

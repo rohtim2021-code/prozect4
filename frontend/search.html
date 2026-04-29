@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Search by Aadhaar</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#FFFDF5;
+  text-align:center;
+  padding:50px;
+}
+
+input{
+  padding:10px;
+  width:250px;
+  margin:10px;
+  border-radius:6px;
+  border:1px solid #ddd;
+}
+
+button{
+  padding:10px 20px;
+  background:#D94F1E;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  border-radius:6px;
+}
+
+.card{
+  margin-top:30px;
+  padding:20px;
+  background:#fff;
+  border-radius:10px;
+  display:inline-block;
+  border:1px solid #ddd;
+  width:300px;
+  text-align:left;
+}
+
+.card h3{
+  text-align:center;
+  margin-bottom:12px;
+  color:#D94F1E;
+}
+
+.img-box{
+  width:200px;
+  height:200px;
+  margin:auto;
+  overflow:hidden;
+  border-radius:10px;
+}
+
+.img-box img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  cursor:pointer;
+}
+
+.card p{
+  margin:6px 0;
+  font-size:14px;
+  color:#444;
+}
+
+.card p b{color:#1C1917;}
+
+.match-badge{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:bold;
+}
+.match-high{background:#d1fae5;color:#065f46;}
+.match-low {background:#fee2e2;color:#991b1b;}
+.match-none{background:#f3f4f6;color:#aaa;}
+
+.view-btn{
+  width:100%;
+  margin-top:14px;
+  padding:10px;
+  background:linear-gradient(135deg,#D94F1E,#F07245);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:14px;
+}
+
+/* ============ MODAL ============ */
+.modal-overlay{
+  display:none;
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.55);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.modal-overlay.open{display:flex;}
+
+.modal-doc{
+  background:#fff;
+  width:480px;
+  max-width:95vw;
+  max-height:90vh;
+  overflow-y:auto;
+  border-radius:16px;
+  padding:0;
+  box-shadow:0 30px 80px rgba(0,0,0,0.2);
+  animation:popIn .2s ease;
+}
+.modal-doc::-webkit-scrollbar{width:4px;}
+.modal-doc::-webkit-scrollbar-thumb{background:#F3E7D9;border-radius:4px;}
+
+@keyframes popIn{
+  from{opacity:0;transform:scale(.93);}
+  to{opacity:1;transform:scale(1);}
+}
+
+.doc-header{
+  background:linear-gradient(135deg,#D94F1E,#F07245);
+  padding:18px 22px;
+  border-radius:16px 16px 0 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.doc-header h3{
+  color:#fff;
+  font-size:16px;
+  margin:0;
+}
+.doc-close{
+  background:rgba(255,255,255,0.25);
+  border:none;
+  color:#fff;
+  width:28px;height:28px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:15px;
+  line-height:28px;
+  text-align:center;
+}
+
+.doc-body{padding:22px;}
+
+.doc-photo{
+  width:160px;height:160px;
+  margin:0 auto 18px;
+  overflow:hidden;
+  border-radius:12px;
+  border:3px solid #F07245;
+  cursor:pointer;
+}
+.doc-photo img{
+  width:100%;height:100%;
+  object-fit:cover;
+}
+
+.doc-section{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#D94F1E;
+  font-weight:bold;
+  margin:16px 0 8px;
+  border-bottom:1px solid #F3E7D9;
+  padding-bottom:4px;
+}
+
+.doc-row{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+  border-bottom:1px solid #faf5ee;
+  font-size:13px;
+}
+.doc-row:last-child{border:none;}
+.doc-row .lbl{color:#888;flex:0 0 130px;}
+.doc-row .val{color:#1C1917;font-weight:500;text-align:right;word-break:break-word;}
+
+.match-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#fff8f5;
+  border:1px solid #F3E7D9;
+  border-radius:8px;
+  padding:10px 14px;
+  margin-top:14px;
+}
+.match-row .score{
+  font-size:22px;
+  font-weight:bold;
+  color:#D94F1E;
+}
+.match-row .from{
+  font-size:12px;
+  color:#888;
+}
+
+/* matched person strip inside modal */
+.matched-strip{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#fff8f5;
+  border:1px solid #F3E7D9;
+  border-radius:8px;
+  padding:12px;
+  margin-top:10px;
+}
+.matched-strip .mface{
+  width:54px;height:54px;
+  border-radius:8px;
+  overflow:hidden;
+  border:2px solid #F07245;
+  flex-shrink:0;
+  cursor:pointer;
+}
+.matched-strip .mface img{width:100%;height:100%;object-fit:cover;}
+.matched-strip .minfo{flex:1;}
+.matched-strip .minfo b{display:block;font-size:14px;color:#D94F1E;}
+.matched-strip .minfo span{font-size:12px;color:#888;}
+
+#imgpopup{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+#imgpopup img{
+  width:320px;height:320px;
+  object-fit:cover;
+  border-radius:12px;
+}
+</style>
+
+</head>
+<body>
+
+<h2>Search Missing Person</h2>
+
+<input type="text" id="aadhar" placeholder="Enter Aadhaar Number" maxlength="12">
+<br>
+<button onclick="search()">Search</button>
+
+<div id="result"></div>
+
+<!-- MAIN MODAL -->
+<div class="modal-overlay" id="matchModal">
+  <div class="modal-doc">
+    <div class="doc-header">
+      <h3 id="modalTitle">🔍 Person Details</h3>
+      <button class="doc-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="doc-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+
+let currentPerson  = null;
+let foundListCache = [];
+let missingListCache = [];
+
+// preload lists for match lookup
+async function preloadLists(){
+  try{
+    let r1 = await fetch("/api/found/all");
+    foundListCache = await r1.json();
+    let r2 = await fetch("/api/admin/missing");
+    missingListCache = await r2.json();
+  }catch(e){}
+}
+preloadLists();
+
+// ---- SEARCH ----
+async function search(){
+  let aadhar = document.getElementById("aadhar").value.trim();
+
+  if(aadhar.length != 12){
+    alert("Enter valid 12-digit Aadhaar");
+    return;
+  }
+
+  try{
+    let res  = await fetch(`/api/search?aadhar=${aadhar}`);
+    let data = await res.json();
+    let resultDiv = document.getElementById("result");
+
+    if(data.error){
+      resultDiv.innerHTML = "<h3 style='color:#D94F1E;margin-top:30px;'>No Record Found ❌</h3>";
+      return;
+    }
+
+    currentPerson = data;
+
+    let matchPct = data.match    || 0;
+    let matchId  = data.match_id || "-";
+    let badgeCls = matchPct>=80 ? "match-high" : matchPct>0 ? "match-low" : "match-none";
+
+    resultDiv.innerHTML = `
+      <div class="card">
+        <h3>${data.name || "Unknown"}</h3>
+
+        ${data.photo ? `
+        <div class="img-box">
+          <img src="/uploads/${data.photo}" onclick="openImage('/uploads/${data.photo}')">
+        </div>` : ""}
+
+        <br>
+        <p><b>Age:</b>      ${data.age      || "—"} &nbsp;|&nbsp; <b>Gender:</b> ${data.gender || "—"}</p>
+        <p><b>Location:</b> ${data.location || "—"}</p>
+        <p><b>Phone:</b>    ${data.phone    || "—"}</p>
+        <p><b>Email:</b>    ${data.email    || "—"}</p>
+        <p><b>Status:</b>   ${data.status   || "—"}</p>
+
+        <p><b>Match %:</b>
+          <span class="match-badge ${badgeCls}">${matchPct}%</span>
+        </p>
+        <p><b>Match ID:</b> ${matchId}</p>
+
+        <button class="view-btn" onclick="openModal(currentPerson)">
+          📋 View Full Details
+        </button>
+
+        ${matchId !== "-" && matchId !== 0 && matchId !== "0" ? `
+        <button class="view-btn" style="margin-top:8px;background:linear-gradient(135deg,#16a34a,#22c55e);"
+          onclick="loadMatchDetail('${matchId}')">
+          🔍 View Matched Person
+        </button>` : ""}
+      </div>
+    `;
+
+  }catch(err){
+    document.getElementById("result").innerHTML = "<h3 style='color:red;'>Server Error ❌</h3>";
+  }
+}
+
+// ---- LOAD MATCHED PERSON ----
+async function loadMatchDetail(matchId){
+  try{
+    let matched = foundListCache.find(x=> String(x.id)===String(matchId))
+               || missingListCache.find(x=> String(x.id)===String(matchId));
+
+    if(!matched){
+      // refetch in case cache is stale
+      let r1 = await fetch("/api/found/all");
+      foundListCache = await r1.json();
+      matched = foundListCache.find(x=> String(x.id)===String(matchId));
+    }
+    if(!matched){
+      let r2 = await fetch("/api/admin/missing");
+      missingListCache = await r2.json();
+      matched = missingListCache.find(x=> String(x.id)===String(matchId));
+    }
+    if(!matched){ alert("Matched record not found."); return; }
+
+    openMatchedModal(matched);
+  }catch(e){
+    alert("Error loading match details.");
+  }
+}
+
+// ---- BUILD FULL DOC ROWS ----
+function buildRows(d, pct, badgeCls, fromLabel){
+
+  // resolve location fields (found person uses found_xxx keys)
+  let village = d.village || d.found_village || "—";
+  let city    = d.city    || d.found_city    || "—";
+  let state   = d.state   || d.found_state   || "—";
+  let pincode = d.pincode || d.found_pincode  || "—";
+  let nearby  = d.nearby  || d.found_nearby   || "—";
+
+  return `
+    ${d.photo ? `
+    <div class="doc-photo" onclick="openImage('/uploads/${d.photo}')">
+      <img src="/uploads/${d.photo}" alt="photo">
+    </div>` : `<div style="text-align:center;color:#bbb;margin-bottom:16px;">No Photo</div>`}
+
+    <!-- PERSONAL -->
+    <div class="doc-section">👤 Personal Information</div>
+    <div class="doc-row"><span class="lbl">Full Name</span>  <span class="val">${d.name    ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Age</span>        <span class="val">${d.age     ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Gender</span>     <span class="val">${d.gender  ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Height</span>     <span class="val">${d.height  ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Aadhaar</span>    <span class="val">${d.aadhar  ||"—"}</span></div>
+    ${d.relation ? `<div class="doc-row"><span class="lbl">Relation</span><span class="val">${d.relation}</span></div>` : ""}
+
+    <!-- CONTACT -->
+    <div class="doc-section">📞 Contact Details</div>
+    <div class="doc-row"><span class="lbl">Phone</span>      <span class="val">${d.phone   ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Email</span>      <span class="val">${d.email   ||"—"}</span></div>
+
+    <!-- LOCATION -->
+    <div class="doc-section">📍 Location Details</div>
+    <div class="doc-row"><span class="lbl">Location</span>   <span class="val">${d.location||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Village</span>    <span class="val">${village}</span></div>
+    <div class="doc-row"><span class="lbl">City</span>       <span class="val">${city}</span></div>
+    <div class="doc-row"><span class="lbl">State</span>      <span class="val">${state}</span></div>
+    <div class="doc-row"><span class="lbl">PIN Code</span>   <span class="val">${pincode}</span></div>
+    <div class="doc-row"><span class="lbl">Nearby</span>     <span class="val">${nearby}</span></div>
+
+    ${d.home_city ? `
+    <div class="doc-section">🏠 Home Address (Known)</div>
+    <div class="doc-row"><span class="lbl">Address</span>    <span class="val">${d.home_address||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Village</span>    <span class="val">${d.home_village||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">City</span>       <span class="val">${d.home_city   ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">State</span>      <span class="val">${d.home_state  ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">PIN Code</span>   <span class="val">${d.home_pincode||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Nearby</span>     <span class="val">${d.home_nearby ||"—"}</span></div>
+    ` : ""}
+
+    <!-- CASE -->
+    <div class="doc-section">📋 Case Details</div>
+    ${d.status  ? `<div class="doc-row"><span class="lbl">Status</span>     <span class="val">${d.status}</span></div>` : ""}
+    ${d.date    ? `<div class="doc-row"><span class="lbl">Date &amp; Time</span><span class="val">${d.date}</span></div>` : ""}
+    ${d.details ? `<div class="doc-row"><span class="lbl">Description</span><span class="val">${d.details}</span></div>` : ""}
+
+    <!-- MATCH SCORE -->
+    ${pct > 0 ? `
+    <div class="match-row">
+      <div>
+        <div style="font-weight:bold;font-size:13px;">Match Score</div>
+        <div class="from">${fromLabel}</div>
+      </div>
+      <div>
+        <span class="match-badge ${badgeCls}" style="font-size:16px;padding:5px 14px;">${pct}%</span>
+      </div>
+    </div>` : ""}
+  `;
+}
+
+// ---- OPEN MODAL for searched person ----
+function openModal(d){
+  let pct      = d.match || 0;
+  let badgeCls = pct>=80 ? "match-high" : pct>0 ? "match-low" : "match-none";
+
+  document.getElementById("modalTitle").innerText = "📋 " + (d.name||"Unknown") + " — Full Details";
+  document.getElementById("modalBody").innerHTML  = buildRows(d, pct, badgeCls, "matched with another record");
+
+  // if matched record exists, show strip at bottom
+  if(d.match_id && d.match_id!=="-" && d.match_id!=="0"){
+    let matchedRec = foundListCache.find(x=> String(x.id)===String(d.match_id))
+                  || missingListCache.find(x=> String(x.id)===String(d.match_id));
+    if(matchedRec){
+      document.getElementById("modalBody").innerHTML += `
+        <div class="doc-section">👁 Matched Person</div>
+        <div class="matched-strip">
+          ${matchedRec.photo ? `
+          <div class="mface" onclick="openImage('/uploads/${matchedRec.photo}')">
+            <img src="/uploads/${matchedRec.photo}">
+          </div>` : ""}
+          <div class="minfo">
+            <b>${matchedRec.name||"Unknown"}</b>
+            <span>📍 ${matchedRec.location||"—"}</span><br>
+            <span>📞 ${matchedRec.phone||"—"}</span>
+            ${matchedRec.age ? `<br><span>Age: ${matchedRec.age} | ${matchedRec.gender||"—"}</span>` : ""}
+          </div>
+          <span class="match-badge ${badgeCls}" style="font-size:15px;padding:5px 12px;">${pct}%</span>
+        </div>
+        <button class="view-btn" style="margin-top:12px;"
+          onclick="closeModal();loadMatchDetail('${d.match_id}')">
+          🔍 Open Matched Person Full Details
+        </button>
+      `;
+    }
+  }
+
+  document.getElementById("matchModal").classList.add("open");
+}
+
+// ---- OPEN MODAL for matched person ----
+function openMatchedModal(d){
+  let pct      = currentPerson ? (currentPerson.match || 0) : 0;
+  let badgeCls = pct>=80 ? "match-high" : pct>0 ? "match-low" : "match-none";
+
+  document.getElementById("modalTitle").innerText = "🔍 Matched Person — #" + d.id;
+  document.getElementById("modalBody").innerHTML  = buildRows(d, pct, badgeCls, "with your searched record");
+  document.getElementById("matchModal").classList.add("open");
+}
+
+function closeModal(){
+  document.getElementById("matchModal").classList.remove("open");
+}
+
+document.getElementById("matchModal").addEventListener("click", function(e){
+  if(e.target===this) closeModal();
+});
+
+function openImage(src){
+  let el = document.createElement("div");
+  el.id  = "imgpopup";
+  el.innerHTML = `<img src="${src}">`;
+  el.onclick = ()=> el.remove();
+  document.body.appendChild(el);
+}
+
+document.getElementById("aadhar").addEventListener("keydown", e=>{
+  if(e.key==="Enter") search();
+});
+
+</script>
+
+</body>
+</html>

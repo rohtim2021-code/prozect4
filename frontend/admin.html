@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<style>
+:root{
+  --bg:#fdf8f3;
+  --card:#ffffff;
+  --primary:#c95d2a;
+  --soft:#f3e7d9;
+  --border:#e7d9c7;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Segoe UI';
+  background:var(--bg);
+}
+
+/* ===== HEADER ===== */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 25px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+}
+.header h2{color:var(--primary);}
+
+/* ===== STAT CARDS ===== */
+.cards{
+  display:flex;
+  gap:15px;
+  padding:15px;
+}
+.card{
+  flex:1;
+  background:var(--card);
+  padding:15px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  text-align:center;
+}
+.card h3{font-size:13px;color:#888;margin-bottom:6px;}
+.card p{font-size:22px;font-weight:bold;color:var(--primary);}
+
+/* ===== TABLES LAYOUT ===== */
+.main{display:flex;gap:15px;padding:15px;}
+.box{
+  flex:1;
+  background:var(--card);
+  border-radius:12px;
+  padding:10px;
+  border:1px solid var(--border);
+  height:420px;
+  overflow:auto;
+}
+.box h3{
+  color:#fff;
+  padding:6px 10px;
+  border-radius:6px;
+  margin-bottom:6px;
+}
+.box:nth-child(1) h3{background:#c95d2a;}
+.box:nth-child(2) h3{background:#2563eb;}
+
+/* ===== TABLE ===== */
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12.5px;
+  table-layout:fixed;
+}
+thead th{
+  background:var(--soft);
+  padding:7px 6px;
+  text-align:left;
+  font-weight:600;
+  font-size:12px;
+  color:#555;
+  border-bottom:1px solid var(--border);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+tbody td{
+  padding:7px 6px;
+  border-bottom:1px solid #f3ede5;
+  vertical-align:middle;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+tbody tr:hover{background:#fdf3ec;}
+
+/* MISSING cols */
+.tbl-missing col.c-id    {width:32px;}
+.tbl-missing col.c-photo {width:48px;}
+.tbl-missing col.c-name  {width:auto;}
+.tbl-missing col.c-loc   {width:100px;}
+.tbl-missing col.c-status{width:58px;}
+.tbl-missing col.c-fid   {width:75px;}
+.tbl-missing col.c-pct   {width:50px;}
+.tbl-missing col.c-act   {width:80px;}
+.tbl-missing col.c-view  {width:45px;}
+
+/* FOUND cols */
+.tbl-found col.c-id    {width:32px;}
+.tbl-found col.c-photo {width:48px;}
+.tbl-found col.c-name  {width:auto;}
+.tbl-found col.c-loc   {width:95px;}
+.tbl-found col.c-mid   {width:72px;}
+.tbl-found col.c-fid   {width:72px;}
+.tbl-found col.c-pct   {width:50px;}
+.tbl-found col.c-act   {width:80px;}
+.tbl-found col.c-view  {width:45px;}
+
+/* FAMILY cols */
+.tbl-family col.c-id    {width:32px;}
+.tbl-family col.c-photo {width:48px;}
+.tbl-family col.c-name  {width:auto;}
+.tbl-family col.c-loc   {width:100px;}
+.tbl-family col.c-fid   {width:75px;}
+.tbl-family col.c-pct   {width:50px;}
+.tbl-family col.c-act   {width:80px;}
+.tbl-family col.c-view  {width:45px;}
+
+/* photo cell */
+.img-box{width:38px;height:38px;overflow:hidden;border-radius:5px;border:1px solid var(--border);}
+.img-box img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* face mini */
+.face-mini{display:flex;align-items:center;gap:4px;}
+.face-mini-img{width:28px;height:28px;border-radius:4px;overflow:hidden;border:1px solid #ccc;flex-shrink:0;}
+.face-mini-img img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* badges */
+.mid{display:inline-block;padding:2px 5px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;}
+.mid-found  {background:#dbeafe;color:#1d4ed8;}
+.mid-missing{background:#fee2e2;color:#b91c1c;}
+.mid-family {background:#ede9fe;color:#6d28d9;}
+.mid-none   {color:#bbb;font-size:11px;}
+
+.pct-high{color:#16a34a;font-weight:700;}
+.pct-low {color:#dc2626;font-weight:600;}
+.pct-none{color:#bbb;}
+
+.badge-pending {background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:10px;font-size:11px;}
+.badge-approved{background:#d1fae5;color:#065f46;padding:2px 6px;border-radius:10px;font-size:11px;}
+
+tr.alert-row td{background:#fff7ed;}
+
+/* buttons */
+.btn{padding:3px 7px;border:none;border-radius:4px;cursor:pointer;font-size:11.5px;}
+.approve  {background:#22c55e;color:#fff;}
+.reject   {background:#ef4444;color:#fff;}
+.view     {background:#e5e7eb;color:#333;}
+.match-btn{background:#3b82f6;color:#fff;}
+
+/* ===== VIEW MODAL ===== */
+.modal-overlay{
+  display:none;
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.5);
+  justify-content:center;align-items:center;
+  z-index:999;
+}
+.modal-overlay.open{display:flex;}
+
+.modal-doc{
+  background:#fff;
+  width:500px;
+  max-width:96vw;
+  max-height:90vh;
+  overflow-y:auto;
+  border-radius:16px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.2);
+  animation:popIn .18s ease;
+}
+.modal-doc::-webkit-scrollbar{width:4px;}
+.modal-doc::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+@keyframes popIn{
+  from{opacity:0;transform:scale(.93);}
+  to  {opacity:1;transform:scale(1);}
+}
+
+.doc-header{
+  background:linear-gradient(135deg,#c95d2a,#e8845a);
+  padding:15px 20px;
+  border-radius:16px 16px 0 0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.doc-header h3{color:#fff;font-size:15px;}
+.doc-close{
+  background:rgba(255,255,255,0.25);
+  border:none;color:#fff;
+  width:26px;height:26px;
+  border-radius:50%;cursor:pointer;font-size:14px;
+  line-height:26px;text-align:center;
+}
+
+.doc-body{padding:20px;}
+
+.doc-photo{
+  width:150px;height:150px;
+  margin:0 auto 16px;
+  overflow:hidden;
+  border-radius:10px;
+  border:3px solid #e8845a;
+  cursor:pointer;
+}
+.doc-photo img{width:100%;height:100%;object-fit:cover;}
+
+.doc-section{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:var(--primary);
+  font-weight:700;
+  margin:14px 0 7px;
+  border-bottom:1px solid var(--soft);
+  padding-bottom:3px;
+}
+
+.doc-row{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px solid #faf5ee;
+  font-size:13px;
+}
+.doc-row:last-child{border:none;}
+.doc-row .lbl{color:#999;flex:0 0 130px;font-size:12px;}
+.doc-row .val{color:#1C1917;font-weight:500;text-align:right;word-break:break-word;}
+
+.match-detail-box{
+  background:#fff8f3;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.match-detail-box .mface{
+  width:56px;height:56px;
+  border-radius:8px;
+  overflow:hidden;
+  border:2px solid #e8845a;
+  flex-shrink:0;
+}
+.match-detail-box .mface img{width:100%;height:100%;object-fit:cover;}
+.match-detail-box .minfo{flex:1;}
+.match-detail-box .minfo b{display:block;font-size:14px;color:#c95d2a;}
+.match-detail-box .minfo span{font-size:12px;color:#888;}
+.match-score-badge{
+  font-size:20px;font-weight:700;color:#c95d2a;
+  background:var(--soft);
+  padding:6px 12px;border-radius:8px;white-space:nowrap;
+}
+
+/* ===== ALERT MODAL ===== */
+#alertModal{
+  display:none;
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.55);
+  justify-content:center;align-items:center;
+  z-index:1100;
+}
+#alertModal.open{display:flex;}
+
+.alert-doc{
+  background:#fff;
+  width:480px;
+  max-width:96vw;
+  max-height:90vh;
+  overflow-y:auto;
+  border-radius:16px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.25);
+  animation:popIn .18s ease;
+}
+.alert-doc::-webkit-scrollbar{width:4px;}
+.alert-doc::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+.alert-header{
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  padding:15px 20px;
+  border-radius:16px 16px 0 0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.alert-header h3{color:#fff;font-size:15px;margin:0;}
+.alert-close{
+  background:rgba(255,255,255,0.25);
+  border:none;color:#fff;
+  width:26px;height:26px;
+  border-radius:50%;cursor:pointer;font-size:14px;
+  line-height:26px;text-align:center;
+}
+
+.alert-body{padding:20px;}
+
+/* two-person side-by-side in alert */
+.alert-persons{
+  display:flex;
+  gap:14px;
+  margin-bottom:16px;
+}
+.alert-person{
+  flex:1;
+  background:#faf5ee;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  text-align:center;
+}
+.alert-person .ap-photo{
+  width:80px;height:80px;
+  margin:0 auto 8px;
+  overflow:hidden;
+  border-radius:8px;
+  border:2px solid #e8845a;
+  cursor:pointer;
+}
+.alert-person .ap-photo img{width:100%;height:100%;object-fit:cover;}
+.alert-person .ap-label{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  margin-bottom:6px;
+}
+.ap-missing-lbl{color:#dc2626;}
+.ap-found-lbl  {color:#16a34a;}
+.ap-family-lbl {color:#6d28d9;}
+.alert-person p{font-size:12px;color:#555;margin:2px 0;}
+.alert-person b{color:#1c1917;}
+
+.alert-score{
+  text-align:center;
+  font-size:28px;
+  font-weight:700;
+  color:#dc2626;
+  background:#fef2f2;
+  border:1px solid #fecaca;
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:16px;
+}
+.alert-score span{font-size:14px;color:#888;display:block;font-weight:400;}
+
+/* SMS button */
+.sms-btn{
+  width:100%;
+  padding:11px;
+  border:none;
+  border-radius:8px;
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  color:#fff;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  margin-top:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.sms-btn:hover{opacity:.88;}
+
+.wa-btn{
+  width:100%;
+  padding:11px;
+  border:none;
+  border-radius:8px;
+  background:#25d366;
+  color:#fff;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.wa-btn:hover{opacity:.88;}
+
+/* full image popup */
+#imgpopup{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);
+  display:flex;justify-content:center;align-items:center;
+  z-index:9999;cursor:pointer;
+}
+#imgpopup img{width:300px;height:300px;object-fit:cover;border-radius:12px;}
+
+/* toast */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:#333;color:#fff;
+  padding:10px 22px;border-radius:8px;
+  font-size:13px;display:none;z-index:9998;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>🔥 Admin Panel - Lost &amp; Finder</h2>
+</div>
+
+<div class="cards">
+  <div class="card"><h3>Total Missing</h3><p id="total">0</p></div>
+  <div class="card"><h3>Approved</h3>    <p id="approved">0</p></div>
+  <div class="card"><h3>Pending</h3>     <p id="pending">0</p></div>
+  <div class="card"><h3>Total Found</h3> <p id="total_found">0</p></div>
+  <div class="card"><h3>🚨 Alerts</h3>   <p id="alerts">0</p></div>
+</div>
+
+<div style="padding:0 15px 10px;">
+  <button class="btn match-btn" onclick="runMatch()">⚡ Auto Match</button>
+</div>
+
+<div class="main">
+
+<!-- ===== MISSING TABLE ===== -->
+<div class="box">
+<h3>Missing Persons</h3>
+<table class="tbl-missing">
+  <colgroup>
+    <col class="c-id"><col class="c-photo"><col class="c-name">
+    <col class="c-loc"><col class="c-status"><col class="c-fid">
+    <col class="c-pct"><col class="c-act"><col class="c-view">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>ID</th><th>Photo</th><th>Name</th>
+      <th>Location</th><th>Status</th>
+      <th>Found ID</th><th>Match%</th>
+      <th>Action</th><th>View</th>
+    </tr>
+  </thead>
+  <tbody id="missing"></tbody>
+</table>
+</div>
+
+<!-- ===== FOUND TABLE ===== -->
+<div class="box">
+<h3>Found Persons</h3>
+<table class="tbl-found">
+  <colgroup>
+    <col class="c-id"><col class="c-photo"><col class="c-name">
+    <col class="c-loc"><col class="c-mid"><col class="c-fid">
+    <col class="c-pct"><col class="c-act"><col class="c-view">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>ID</th><th>Photo</th><th>Name</th>
+      <th>Location</th>
+      <th>Missing ID</th><th>Family ID</th>
+      <th>Match%</th><th>Action</th><th>View</th>
+    </tr>
+  </thead>
+  <tbody id="found"></tbody>
+</table>
+</div>
+
+</div>
+
+<!-- ===== FAMILY TABLE ===== -->
+<div class="box" style="margin:0 15px 20px;">
+<h3 style="background:#16a34a;">Family Members</h3>
+<table class="tbl-family">
+  <colgroup>
+    <col class="c-id"><col class="c-photo"><col class="c-name">
+    <col class="c-loc"><col class="c-fid"><col class="c-pct">
+    <col class="c-act"><col class="c-view">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>ID</th><th>Photo</th><th>Name</th>
+      <th>Location</th><th>Found ID</th><th>Match%</th>
+      <th>Action</th><th>View</th>
+    </tr>
+  </thead>
+  <tbody id="family"></tbody>
+</table>
+</div>
+
+<!-- ===== VIEW MODAL ===== -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal-doc">
+    <div class="doc-header">
+      <h3 id="modalTitle">📋 Details</h3>
+      <button class="doc-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="doc-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ===== ALERT MODAL ===== -->
+<div id="alertModal">
+  <div class="alert-doc">
+    <div class="alert-header">
+      <h3>🚨 High Match Alert!</h3>
+      <button class="alert-close" onclick="closeAlert()">✕</button>
+    </div>
+    <div class="alert-body" id="alertBody"></div>
+  </div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ===== GLOBAL CACHE =====
+let allMissing = [];
+let allFound   = [];
+let allFamily  = [];
+
+// ===== HELPERS =====
+function midBadge(id, cls){
+  if(!id || id==="-" || id===0 || id==="0") return `<span class="mid-none">—</span>`;
+  return `<span class="mid ${cls}">#${id}</span>`;
+}
+
+function pctSpan(val){
+  if(!val || val===0) return `<span class="pct-none">—</span>`;
+  return `<span class="${val>=80?'pct-high':'pct-low'}">${val}%</span>`;
+}
+
+function statusBadge(s){
+  return s==="approved"
+    ? `<span class="badge-approved">✓ OK</span>`
+    : `<span class="badge-pending">⏳</span>`;
+}
+
+function imgBox(photo){
+  if(!photo) return `<div class="img-box" style="background:#f3f3f3;"></div>`;
+  return `<div class="img-box"><img src="/uploads/${photo}" onerror="this.style.display='none'"></div>`;
+}
+
+function matchCell(id, photo, cls){
+  if(!id || id==="-" || id===0 || id==="0") return `<span class="mid-none">—</span>`;
+  let badge = `<span class="mid ${cls}">#${id}</span>`;
+  if(photo){
+    return `<div class="face-mini">
+      <div class="face-mini-img"><img src="/uploads/${photo}" onerror="this.style.display='none'"></div>
+      ${badge}
+    </div>`;
+  }
+  return badge;
+}
+
+function findRec(id, table){
+  let list = table==="missing" ? allMissing : table==="found" ? allFound : allFamily;
+  return list.find(x=> String(x.id)===String(id)) || null;
+}
+
+// ===== LOAD MISSING =====
+async function loadMissing(){
+  let res = await fetch("/api/admin/missing");
+  allMissing = await res.json();
+  let tbody = document.getElementById("missing");
+  tbody.innerHTML = "";
+  document.getElementById("total").innerText    = allMissing.length;
+  document.getElementById("approved").innerText = allMissing.filter(x=>x.status==="approved").length;
+  document.getElementById("pending").innerText  = allMissing.filter(x=>x.status==="pending").length;
+
+  allMissing.forEach(item=>{
+    let fPhoto  = (findRec(item.match_id,"found")||{}).photo || null;
+    let isAlert = item.match >= 80;
+    tbody.innerHTML += `
+    <tr class="${isAlert?'alert-row':''}">
+      <td><b>${item.id}</b></td>
+      <td>${imgBox(item.photo)}</td>
+      <td title="${item.name||''}">${item.name||"—"}</td>
+      <td title="${item.location||''}">${item.location||"—"}</td>
+      <td>${statusBadge(item.status)}</td>
+      <td>${matchCell(item.match_id, fPhoto, "mid-found")}</td>
+      <td>${pctSpan(item.match)}</td>
+      <td>
+        <button class="btn approve" onclick="approve('${item.id}')">✓</button>
+        <button class="btn reject"  onclick="rejectRec('${item.id}')">✕</button>
+      </td>
+      <td>
+        <button class="btn view" onclick='openView(${safeJSON(item)},"missing")'>View</button>
+        ${isAlert ? `<button class="btn" style="background:#dc2626;color:#fff;margin-top:2px;" onclick='openAlert(${safeJSON(item)},"missing")'>🚨</button>` : ""}
+      </td>
+    </tr>`;
+  });
+}
+
+// ===== LOAD FOUND =====
+async function loadFound(){
+  let res  = await fetch("/api/found/all");
+  allFound = await res.json();
+  let tbody = document.getElementById("found");
+  tbody.innerHTML = "";
+  let alertCount = 0;
+  document.getElementById("total_found").innerText = allFound.length;
+
+  allFound.forEach(item=>{
+    let mPhoto   = (findRec(item.match_id,        "missing")||{}).photo || null;
+    let famPhoto = (findRec(item.family_match_id,  "family") ||{}).photo || null;
+    let isAlert  = item.match>=80 || (item.family_match||0)>=80;
+    if(isAlert) alertCount++;
+
+    tbody.innerHTML += `
+    <tr class="${isAlert?'alert-row':''}">
+      <td><b>${item.id}</b></td>
+      <td>${imgBox(item.photo)}</td>
+      <td title="${item.name||''}">${item.name||"—"}</td>
+      <td title="${item.location||''}">${item.location||"—"}</td>
+      <td>${matchCell(item.match_id,         mPhoto,   "mid-missing")}</td>
+      <td>${matchCell(item.family_match_id,  famPhoto, "mid-family")}</td>
+      <td>${pctSpan(item.match)}</td>
+      <td>
+        <button class="btn approve" onclick="approve('${item.id}')">✓</button>
+        <button class="btn reject"  onclick="rejectRec('${item.id}')">✕</button>
+      </td>
+      <td>
+        <button class="btn view" onclick='openView(${safeJSON(item)},"found")'>View</button>
+        ${isAlert ? `<button class="btn" style="background:#dc2626;color:#fff;margin-top:2px;" onclick='openAlert(${safeJSON(item)},"found")'>🚨</button>` : ""}
+      </td>
+    </tr>`;
+  });
+
+  document.getElementById("alerts").innerText = alertCount;
+}
+
+// ===== LOAD FAMILY =====
+async function loadFamily(){
+  let res   = await fetch("/api/family/all");
+  allFamily = await res.json();
+  let tbody = document.getElementById("family");
+  tbody.innerHTML = "";
+
+  allFamily.forEach(item=>{
+    let fPhoto  = (findRec(item.match_id,"found")||{}).photo || null;
+    let isAlert = item.match >= 80;
+    tbody.innerHTML += `
+    <tr class="${isAlert?'alert-row':''}">
+      <td><b>${item.id}</b></td>
+      <td>${imgBox(item.photo)}</td>
+      <td title="${item.name||''}">${item.name||"—"}</td>
+      <td title="${item.location||''}">${item.location||"—"}</td>
+      <td>${matchCell(item.match_id, fPhoto, "mid-found")}</td>
+      <td>${pctSpan(item.match)}</td>
+      <td>
+        <button class="btn approve" onclick="approve('${item.id}')">✓</button>
+        <button class="btn reject"  onclick="rejectRec('${item.id}')">✕</button>
+      </td>
+      <td>
+        <button class="btn view" onclick='openView(${safeJSON(item)},"family")'>View</button>
+        ${isAlert ? `<button class="btn" style="background:#dc2626;color:#fff;margin-top:2px;" onclick='openAlert(${safeJSON(item)},"family")'>🚨</button>` : ""}
+      </td>
+    </tr>`;
+  });
+}
+
+// safe JSON for inline onclick
+function safeJSON(obj){
+  return JSON.stringify(obj).replace(/'/g,"&#39;");
+}
+
+// ===== BUILD FULL DOC ROWS =====
+function buildDocRows(item, tableType){
+  let pct      = item.match || 0;
+  let badgeCls = pct>=80 ? "pct-high" : pct>0 ? "pct-low" : "pct-none";
+
+  let matchedRec   = null;
+  let matchedLabel = "";
+  if(tableType==="missing" && item.match_id && item.match_id!=="-"){
+    matchedRec   = findRec(item.match_id, "found");
+    matchedLabel = "Matched Found Person";
+  } else if(tableType==="found"){
+    if(item.match_id && item.match_id!=="-"){
+      matchedRec   = findRec(item.match_id, "missing");
+      matchedLabel = "Matched Missing Person";
+    }
+    if(!matchedRec && item.family_match_id && item.family_match_id!=="-"){
+      matchedRec   = findRec(item.family_match_id, "family");
+      matchedLabel = "Matched Family Member";
+    }
+  } else if(tableType==="family" && item.match_id && item.match_id!=="-"){
+    matchedRec   = findRec(item.match_id, "found");
+    matchedLabel = "Matched Found Person";
+  }
+
+  // extra location fields for found person
+  let village = item.village || item.found_village || "—";
+  let city    = item.city    || item.found_city    || "—";
+  let state   = item.state   || item.found_state   || "—";
+  let pincode = item.pincode || item.found_pincode  || "—";
+  let nearby  = item.nearby  || item.found_nearby   || "—";
+
+  return `
+    ${item.photo ? `
+    <div class="doc-photo" onclick="openImg('/uploads/${item.photo}')">
+      <img src="/uploads/${item.photo}" alt="photo">
+    </div>` : `<div style="text-align:center;color:#bbb;margin-bottom:14px;font-size:13px;">No Photo</div>`}
+
+    <div class="doc-section">👤 Personal Information</div>
+    <div class="doc-row"><span class="lbl">Full Name</span>  <span class="val">${item.name    ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Age</span>        <span class="val">${item.age     ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Gender</span>     <span class="val">${item.gender  ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Height</span>     <span class="val">${item.height  ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Aadhaar</span>    <span class="val">${item.aadhar  ||"—"}</span></div>
+    ${item.relation ? `<div class="doc-row"><span class="lbl">Relation</span><span class="val">${item.relation}</span></div>` : ""}
+
+    <div class="doc-section">📞 Contact Details</div>
+    <div class="doc-row"><span class="lbl">Phone</span>      <span class="val">${item.phone   ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Email</span>      <span class="val">${item.email   ||"—"}</span></div>
+
+    <div class="doc-section">📍 Location Details</div>
+    <div class="doc-row"><span class="lbl">Location</span>   <span class="val">${item.location||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Village</span>    <span class="val">${village}</span></div>
+    <div class="doc-row"><span class="lbl">City</span>       <span class="val">${city}</span></div>
+    <div class="doc-row"><span class="lbl">State</span>      <span class="val">${state}</span></div>
+    <div class="doc-row"><span class="lbl">PIN Code</span>   <span class="val">${pincode}</span></div>
+    <div class="doc-row"><span class="lbl">Nearby</span>     <span class="val">${nearby}</span></div>
+
+    ${tableType==="found" && item.home_city ? `
+    <div class="doc-section">🏠 Home Address (Known)</div>
+    <div class="doc-row"><span class="lbl">Address</span>    <span class="val">${item.home_address||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Village</span>    <span class="val">${item.home_village||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">City</span>       <span class="val">${item.home_city   ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">State</span>      <span class="val">${item.home_state  ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">PIN Code</span>   <span class="val">${item.home_pincode||"—"}</span></div>
+    ` : ""}
+
+    <div class="doc-section">📋 Case Details</div>
+    ${tableType!=="family" ? `<div class="doc-row"><span class="lbl">Status</span><span class="val">${item.status||"—"}</span></div>` : ""}
+    <div class="doc-row"><span class="lbl">Date &amp; Time</span><span class="val">${item.date   ||"—"}</span></div>
+    <div class="doc-row"><span class="lbl">Description</span>   <span class="val">${item.details||"—"}</span></div>
+
+    ${pct>0 ? `
+    <div class="doc-section">🔗 Match Information</div>
+    <div class="doc-row">
+      <span class="lbl">Match Score</span>
+      <span class="val ${badgeCls}" style="font-size:15px;">${pct}%</span>
+    </div>
+    <div class="doc-row">
+      <span class="lbl">Matched ID</span>
+      <span class="val">#${item.match_id||"—"}</span>
+    </div>` : ""}
+
+    ${matchedRec ? `
+    <div class="doc-section">👁 ${matchedLabel}</div>
+    <div class="match-detail-box">
+      ${matchedRec.photo ? `
+      <div class="mface" onclick="openImg('/uploads/${matchedRec.photo}')">
+        <img src="/uploads/${matchedRec.photo}">
+      </div>` : ""}
+      <div class="minfo">
+        <b>${matchedRec.name||"Unknown"}</b>
+        <span>📍 ${matchedRec.location||"—"}</span><br>
+        <span>📞 ${matchedRec.phone||"—"}</span>
+        ${matchedRec.age    ? `<br><span>Age: ${matchedRec.age}</span>` : ""}
+        ${matchedRec.gender ? `<span> | ${matchedRec.gender}</span>` : ""}
+      </div>
+      <div class="match-score-badge">${pct}%</div>
+    </div>` : ""}
+  `;
+}
+
+// ===== OPEN VIEW MODAL =====
+function openView(item, tableType){
+  let typeLabel = tableType==="missing" ? "Missing Person"
+                : tableType==="found"   ? "Found Person"
+                : "Family Member";
+  document.getElementById("modalTitle").innerText = "📋 " + typeLabel + " — #" + item.id;
+  document.getElementById("modalBody").innerHTML  = buildDocRows(item, tableType);
+  document.getElementById("viewModal").classList.add("open");
+}
+
+function closeModal(){
+  document.getElementById("viewModal").classList.remove("open");
+}
+document.getElementById("viewModal").addEventListener("click", function(e){
+  if(e.target===this) closeModal();
+});
+
+// ===== ALERT MODAL =====
+function openAlert(item, tableType){
+  // figure out matched record
+  let matchedRec   = null;
+  let matchedType  = "";
+  let matchedLabel = "";
+  let matchScore   = item.match || 0;
+
+  if(tableType==="missing"){
+    matchedRec   = findRec(item.match_id, "found");
+    matchedType  = "found";
+    matchedLabel = "Found Person";
+  } else if(tableType==="found"){
+    matchedRec   = findRec(item.match_id, "missing");
+    matchedType  = "missing";
+    matchedLabel = "Missing Person";
+    if(!matchedRec){
+      matchedRec   = findRec(item.family_match_id, "family");
+      matchedType  = "family";
+      matchedLabel = "Family Member";
+      matchScore   = item.family_match || item.match || 0;
+    }
+  } else if(tableType==="family"){
+    matchedRec   = findRec(item.match_id, "found");
+    matchedType  = "found";
+    matchedLabel = "Found Person";
+  }
+
+  let typeLabel  = tableType==="missing" ? "Missing Person"
+                 : tableType==="found"   ? "Found Person"
+                 : "Family Member";
+  let typeLblCls = tableType==="missing" ? "ap-missing-lbl"
+                 : tableType==="found"   ? "ap-found-lbl"
+                 : "ap-family-lbl";
+  let matchLblCls= matchedType==="missing" ? "ap-missing-lbl"
+                 : matchedType==="found"   ? "ap-found-lbl"
+                 : "ap-family-lbl";
+
+  // phone numbers for SMS
+  let phones = [];
+  if(item.phone)                                phones.push(item.phone);
+  if(matchedRec && matchedRec.phone && matchedRec.phone !== item.phone)
+                                                phones.push(matchedRec.phone);
+
+  let smsText = buildSMSText(item, matchedRec, matchScore);
+
+  document.getElementById("alertBody").innerHTML = `
+
+    <div class="alert-score">
+      🎯 ${matchScore}% Match Found!
+      <span>These two records are highly likely the same person</span>
+    </div>
+
+    <div class="alert-persons">
+
+      <!-- PERSON 1 -->
+      <div class="alert-person">
+        <div class="ap-label ${typeLblCls}">${typeLabel}</div>
+        ${item.photo ? `
+        <div class="ap-photo" onclick="openImg('/uploads/${item.photo}')">
+          <img src="/uploads/${item.photo}">
+        </div>` : ""}
+        <p><b>${item.name||"Unknown"}</b></p>
+        <p>Age: ${item.age||"—"} | ${item.gender||"—"}</p>
+        <p>📍 ${(item.location||"—").substring(0,30)}</p>
+        <p>📞 ${item.phone||"—"}</p>
+      </div>
+
+      <!-- VS -->
+      <div style="display:flex;align-items:center;font-size:18px;font-weight:700;color:#dc2626;">↔</div>
+
+      <!-- PERSON 2 -->
+      <div class="alert-person">
+        <div class="ap-label ${matchLblCls}">${matchedLabel}</div>
+        ${matchedRec && matchedRec.photo ? `
+        <div class="ap-photo" onclick="openImg('/uploads/${matchedRec.photo}')">
+          <img src="/uploads/${matchedRec.photo}">
+        </div>` : `<div style="height:80px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No Photo</div>`}
+        <p><b>${matchedRec ? (matchedRec.name||"Unknown") : "—"}</b></p>
+        <p>Age: ${matchedRec ? (matchedRec.age||"—") : "—"} | ${matchedRec ? (matchedRec.gender||"—") : "—"}</p>
+        <p>📍 ${matchedRec ? ((matchedRec.location||"—").substring(0,30)) : "—"}</p>
+        <p>📞 ${matchedRec ? (matchedRec.phone||"—") : "—"}</p>
+      </div>
+
+    </div>
+
+    <!-- FULL DETAILS BUTTON -->
+    <button class="btn view" style="width:100%;padding:9px;margin-bottom:8px;font-size:13px;"
+      onclick="closeAlert();openView(${safeJSON(item)},'${tableType}')">
+      📋 View Full Details
+    </button>
+
+    <!-- SMS BUTTONS -->
+    ${phones.length > 0 ? phones.map(ph => `
+    <button class="sms-btn" onclick="sendSMS('${ph}', \`${smsText.replace(/`/g,"'")}\`)">
+      📱 Send SMS Alert to ${ph}
+    </button>`).join("") : `<p style="color:#bbb;font-size:12px;text-align:center;margin-top:8px;">No phone number available for SMS</p>`}
+
+    <!-- WHATSAPP BUTTONS -->
+    ${phones.length > 0 ? phones.map(ph => `
+    <button class="wa-btn" onclick="sendWA('${ph}', \`${smsText.replace(/`/g,"'")}\`)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.553 4.11 1.52 5.832L0 24l6.303-1.496A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.6a9.562 9.562 0 01-4.868-1.332l-.349-.207-3.617.858.898-3.522-.228-.362A9.555 9.555 0 012.4 12C2.4 6.698 6.698 2.4 12 2.4S21.6 6.698 21.6 12 17.302 21.6 12 21.6z"/></svg>
+      WhatsApp Alert to ${ph}
+    </button>`).join("") : ""}
+
+  `;
+
+  document.getElementById("alertModal").classList.add("open");
+}
+
+function closeAlert(){
+  document.getElementById("alertModal").classList.remove("open");
+}
+document.getElementById("alertModal").addEventListener("click", function(e){
+  if(e.target===this) closeAlert();
+});
+
+// ===== SMS TEXT =====
+function buildSMSText(item, matched, score){
+  let txt = `🚨 LOST & FINDER ALERT\n`;
+  txt += `Match Score: ${score}%\n\n`;
+  txt += `Person 1:\n`;
+  txt += `Name: ${item.name||"Unknown"}\n`;
+  txt += `Age: ${item.age||"—"} | Gender: ${item.gender||"—"}\n`;
+  txt += `Location: ${item.location||"—"}\n`;
+  txt += `Phone: ${item.phone||"—"}\n`;
+  if(matched){
+    txt += `\nMatched With:\n`;
+    txt += `Name: ${matched.name||"Unknown"}\n`;
+    txt += `Age: ${matched.age||"—"} | Gender: ${matched.gender||"—"}\n`;
+    txt += `Location: ${matched.location||"—"}\n`;
+    txt += `Phone: ${matched.phone||"—"}\n`;
+  }
+  txt += `\nPlease contact immediately to reunite!`;
+  return txt;
+}
+
+function sendSMS(phone, text){
+  // Opens default SMS app with pre-filled number and message
+  window.location.href = `sms:${phone}?body=${encodeURIComponent(text)}`;
+}
+
+function sendWA(phone, text){
+  // Remove spaces/dashes from phone, add country code if needed
+  let p = phone.replace(/\D/g,"");
+  if(p.length===10) p = "91" + p;   // India default
+  window.open(`https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(text)}`, "_blank");
+}
+
+// ===== FULL IMAGE POPUP =====
+function openImg(src){
+  let el = document.createElement("div");
+  el.id  = "imgpopup";
+  el.innerHTML = `<img src="${src}">`;
+  el.onclick = ()=> el.remove();
+  document.body.appendChild(el);
+}
+
+// ===== ACTIONS =====
+async function approve(id){
+  await fetch("/api/approve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+  loadAll();
+}
+
+async function rejectRec(id){
+  if(!confirm("Delete this record?")) return;
+  await fetch("/api/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+  loadAll();
+}
+
+async function runMatch(){
+  let btn = document.querySelector(".match-btn");
+  btn.innerText = "⏳ Matching...";
+  btn.disabled  = true;
+  await fetch("/api/match");
+  await loadAll();
+  btn.innerText = "⚡ Auto Match";
+  btn.disabled  = false;
+}
+
+async function loadAll(){
+  await loadMissing();
+  await loadFound();
+  await loadFamily();
+}
+
+// ===== INIT =====
+loadAll();
+</script>
+
+</body>
+</html>
